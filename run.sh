@@ -3,10 +3,7 @@
 # KidsAsk.ai setup and run script
 
 # Color codes for output
-GREEN='\033[0;print_section "KidsAsk.ai is starting up!"
-echo -e "Frontend will be available at: ${GREEN}http://localhost:3050${NC}"
-echo -e "API Gateway will be available at: ${GREEN}http://localhost:4000${NC}"
-echo -e "AI Service will be available at: ${GREEN}http://localhost:5050${NC}"
+GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
