@@ -1,0 +1,30 @@
+version: '3.8'
+
+# Development overrides for docker-compose.yml
+services:
+  # Frontend service with hot reload
+  frontend:
+    command: npm run dev
+    environment:
+      - NODE_ENV=development
+
+  # API Gateway with hot reload
+  api:
+    command: npm run dev
+    environment:
+      - NODE_ENV=development
+      - FLASK_DEBUG=true
+
+  # AI Service with debug mode
+  ai-service:
+    environment:
+      - FLASK_DEBUG=true
+      - LOG_LEVEL=DEBUG
+
+  # MongoDB with exposed ports
+  database:
+    ports:
+      - "27017:27017"
+
+volumes:
+  mongodb_data:
