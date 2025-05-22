@@ -70,39 +70,110 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen flex flex-col bg-gradient-to-b from-blue-100 to-purple-100">
-      <Header />
-      
-      <div className="flex-grow container mx-auto px-4 py-8">
-        {!selectedTopic ? (
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-blue-600 mb-6">Welcome to KidsAsk.ai!</h1>
-            <p className="text-xl mb-8">Choose a topic to start asking questions:</p>
-            <TopicSelector topics={topics} onSelectTopic={handleTopicSelect} />
-          </div>
-        ) : (
-          <div className="flex flex-col h-full">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold text-blue-600">
-                Topic: {topics.find(t => t.id === selectedTopic)?.name}
-              </h2>
-              <button 
-                onClick={resetChat}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition"
-              >
-                Change Topic
-              </button>
-            </div>
-            <ChatBox 
-              messages={chatHistory}
-              onSendMessage={handleSendMessage}
-              isLoading={isLoading}
-            />
-          </div>
-        )}
+    <main className="min-h-screen flex flex-col">
+      <div className="absolute top-4 right-4">
+        <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full transition shadow-lg">
+          Log In
+        </button>
       </div>
       
-      <Footer />
+      {!selectedTopic ? (
+        <>
+          <div className="flex-grow container mx-auto px-4 py-12">
+            <div className="text-center mb-12">
+              <h1 className="text-5xl font-bold text-white mb-3">Welcome to KidsAsk.AI 🚀</h1>
+              <p className="text-xl text-white mb-8">Where Curiosity Meets Knowledge in a Safe, Fun Environment!</p>
+              
+              <button 
+                onClick={() => setSelectedTopic(1)}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-full text-lg font-semibold transition transform hover:scale-105 shadow-lg"
+              >
+                Start Learning Now
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="bg-white rounded-xl p-6 shadow-lg text-center">
+                <div className="text-4xl text-yellow-400 mb-3">💡</div>
+                <h3 className="text-xl font-bold text-blue-500 mb-2">Sparks Curiosity</h3>
+                <p className="text-gray-600">Safe environment for endless exploration.</p>
+              </div>
+              
+              <div className="bg-white rounded-xl p-6 shadow-lg text-center">
+                <div className="text-4xl text-green-500 mb-3">🎓</div>
+                <h3 className="text-xl font-bold text-green-600 mb-2">Educational Growth</h3>
+                <p className="text-gray-600">Learning aligned with education standards.</p>
+              </div>
+              
+              <div className="bg-white rounded-xl p-6 shadow-lg text-center">
+                <div className="text-4xl text-red-500 mb-3">🛡️</div>
+                <h3 className="text-xl font-bold text-purple-600 mb-2">Safe Learning</h3>
+                <p className="text-gray-600">Parent-controlled, kid-friendly content.</p>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <div className="bg-white rounded-xl p-6 shadow-lg text-center">
+                <div className="text-4xl text-pink-500 mb-3">🚀</div>
+                <h3 className="text-xl font-bold text-pink-500 mb-2">Interactive Learning</h3>
+                <p className="text-gray-600">Personalized to your child's interests.</p>
+              </div>
+              
+              <div className="bg-white rounded-xl p-6 shadow-lg text-center">
+                <div className="text-4xl text-orange-500 mb-3">🎤</div>
+                <h3 className="text-xl font-bold text-orange-500 mb-2">Voice Interaction</h3>
+                <p className="text-gray-600">Ask questions by voice and get friendly audio responses.</p>
+              </div>
+            </div>
+            
+            <div className="flex justify-center mb-8">
+              <div className="bg-white rounded-xl p-6 shadow-lg text-center w-full max-w-md">
+                <div className="text-4xl text-purple-500 mb-3">🏆</div>
+                <h3 className="text-xl font-bold text-purple-500 mb-2">Fun Achievements</h3>
+                <p className="text-gray-600">Earn badges and rewards through interactive quizzes.</p>
+              </div>
+            </div>
+          </div>
+          
+          <footer className="bg-gray-200 py-4 text-center text-gray-600">
+            <div className="container mx-auto px-4">
+              <p className="mb-2">© 2025 KidsAsk.AI</p>
+              <div className="flex justify-center space-x-6">
+                <a href="#" className="hover:text-gray-900">About Us</a>
+                <a href="#" className="hover:text-gray-900">Terms of Use</a>
+                <a href="#" className="hover:text-gray-900">Privacy Policy</a>
+                <a href="#" className="hover:text-gray-900">Refund Policy</a>
+                <a href="#" className="hover:text-gray-900">Contact Us</a>
+              </div>
+            </div>
+          </footer>
+        </>
+      ) : (
+        <>
+          <Header />
+          <div className="flex-grow container mx-auto px-4 py-8">
+            <div className="flex flex-col h-full">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold text-white">
+                  Topic: {topics.find(t => t.id === selectedTopic)?.name}
+                </h2>
+                <button 
+                  onClick={resetChat}
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition"
+                >
+                  Change Topic
+                </button>
+              </div>
+              <ChatBox 
+                messages={chatHistory}
+                onSendMessage={handleSendMessage}
+                isLoading={isLoading}
+              />
+            </div>
+          </div>
+          <Footer />
+        </>
+      )}
     </main>
   );
 }
