@@ -88,7 +88,7 @@ export default function Home() {
                 onClick={() => setSelectedTopic(1)}
                 className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-full text-lg font-semibold transition transform hover:scale-105 shadow-lg"
               >
-                Start Learning Now
+                Register & Start Learning Now
               </button>
             </div>
             
