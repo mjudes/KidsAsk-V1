@@ -26,6 +26,18 @@ export default function PlanSelection({ initialData, onSubmit, onBack }: PlanSel
   // Plan options
   const plans: PlanOption[] = [
     {
+      id: 'freeTrial',
+      name: 'Free Trial',
+      price: '$0',
+      billing: 'no payment required',
+      features: [
+        'Access to all educational topics',
+        'Limited to 10 questions total',
+        'Standard response time',
+        'No credit card required'
+      ]
+    },
+    {
       id: 'basic',
       name: 'Basic',
       price: '$4.99',
@@ -79,11 +91,11 @@ export default function PlanSelection({ initialData, onSubmit, onBack }: PlanSel
       <h2 className="text-xl font-semibold text-gray-800 mb-4">Choose Your Plan</h2>
       
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {plans.map(plan => (
             <div 
               key={plan.id}
-              className={`border rounded-lg p-5 cursor-pointer transition-all relative ${
+              className={`border rounded-lg p-3 pt-4 cursor-pointer transition-all relative ${
                 selectedPlan === plan.id 
                   ? 'border-blue-500 shadow-md bg-blue-50' 
                   : 'border-gray-200 hover:border-blue-300'
@@ -94,12 +106,12 @@ export default function PlanSelection({ initialData, onSubmit, onBack }: PlanSel
               }}
             >
               {plan.recommended && (
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white text-xs px-3 py-1 rounded-full">
+                <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white text-xs px-4 py-0.5 rounded-full">
                   Recommended
                 </div>
               )}
               
-              <div className="flex items-start mb-4">
+              <div className="flex items-center mb-3">
                 <input
                   type="radio"
                   id={`plan-${plan.id}`}
@@ -107,26 +119,28 @@ export default function PlanSelection({ initialData, onSubmit, onBack }: PlanSel
                   value={plan.id}
                   checked={selectedPlan === plan.id}
                   onChange={() => setSelectedPlan(plan.id)}
-                  className="mt-1 h-4 w-4 text-blue-500 border-gray-300 focus:ring-blue-500"
+                  className="h-4 w-4 text-blue-500 border-gray-300 focus:ring-blue-500"
                 />
-                <label htmlFor={`plan-${plan.id}`} className="ml-3 block">
-                  <span className="text-lg font-medium text-gray-900">{plan.name}</span>
+                <label htmlFor={`plan-${plan.id}`} className="ml-2 block">
+                  <span className="text-base font-medium text-gray-900">{plan.name}</span>
                 </label>
               </div>
               
-              <div className="ml-7">
+              <div className="pl-0.5">
                 <div className="mb-3">
                   <span className="text-2xl font-bold text-gray-900">{plan.price}</span>
-                  <span className="text-gray-500 text-sm ml-1">{plan.billing}</span>
+                  <span className="text-xs text-gray-500 ml-1 block">
+                    {plan.id === 'freeTrial' ? 'no payment required' : 'per month'}
+                  </span>
                 </div>
                 
-                <ul className="space-y-2">
+                <ul className="space-y-1.5">
                   {plan.features.map((feature, index) => (
                     <li key={index} className="flex items-start">
-                      <svg className="h-5 w-5 text-green-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <svg className="h-4 w-4 text-green-500 mr-1.5 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
-                      <span className="text-sm text-gray-700">{feature}</span>
+                      <span className="text-xs text-gray-700">{feature}</span>
                     </li>
                   ))}
                 </ul>

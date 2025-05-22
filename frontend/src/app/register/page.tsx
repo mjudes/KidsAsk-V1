@@ -36,9 +36,52 @@ export default function RegisterPage() {
     setCurrentStep(RegistrationStep.PLAN_SELECTION);
   };
   
-  const handlePlanSubmit = (data: any) => {
-    setFormData(prev => ({ ...prev, ...data }));
-    setCurrentStep(RegistrationStep.PAYMENT_DETAILS);
+  const handlePlanSubmit = async (data: any) => {
+    const updatedFormData = { ...formData, ...data };
+    setFormData(updatedFormData);
+    
+    // If the free trial plan is selected, skip payment and register directly
+    if (data.plan === 'freeTrial') {
+      try {
+        // Import the API utility at runtime to avoid SSR issues
+        const { registerUser } = await import('../../utils/authApi');
+        
+        // Call the API to register user with free trial plan
+        // Using 'basic' as the plan value for the API since the backend only accepts basic, standard, premium
+        const response = await registerUser({
+          ...updatedFormData,
+          plan: 'basic', // Map freeTrial to basic for backend compatibility
+          isFreeTrialUser: true,
+          questionsRemaining: 10
+        });
+        
+        if (response.success) {
+          // Store token in localStorage or cookie
+          document.cookie = `auth_token=${response.data.token}; path=/; max-age=604800; SameSite=Strict`;
+          
+          // Store free trial info in localStorage for frontend tracking
+          localStorage.setItem('kidsask_free_trial', JSON.stringify({
+            isFreeTrialUser: true,
+            questionsRemaining: 10,
+            startDate: new Date().toISOString()
+          }));
+          
+          // Show success message
+          alert('Account created successfully! You have 10 free questions to ask.');
+          
+          // Redirect to topics page
+          router.push('/');
+        } else {
+          alert(`Registration failed: ${response.message}`);
+        }
+      } catch (error) {
+        console.error('Registration error:', error);
+        alert('An error occurred during registration. Please try again.');
+      }
+    } else {
+      // Continue to payment details for paid plans
+      setCurrentStep(RegistrationStep.PAYMENT_DETAILS);
+    }
   };
   
   const handlePaymentSubmit = async (data: any) => {
