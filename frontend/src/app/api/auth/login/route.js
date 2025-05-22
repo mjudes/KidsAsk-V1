@@ -12,12 +12,12 @@ export async function POST(request) {
     const body = await request.json();
     
     // Forward request to API Gateway
-    const response = await axios.post(`${API_URL}/api/chat`, body);
+    const response = await axios.post(`${API_URL}/api/users/login`, body);
     
     // Return response from API Gateway
     return NextResponse.json(response.data);
   } catch (error) {
-    console.error('Error in chat API route:', error);
+    console.error('Error in login API route:', error);
     
     // Handle different types of errors
     if (error.response) {
@@ -26,7 +26,7 @@ export async function POST(request) {
       return NextResponse.json(
         { 
           success: false, 
-          message: error.response.data.message || 'Error from API service' 
+          message: error.response.data.message || 'Login failed' 
         }, 
         { status: error.response.status || 500 }
       );

@@ -1,37 +1,50 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
+import { cookies } from 'next/headers';
 
 // API Gateway URL from environment variables or default to container URL when running in Docker
 // or localhost when running in development
 const API_URL = process.env.API_GATEWAY_URL || (process.env.NEXT_PUBLIC_RUNTIME_ENV === 'docker' ? 
   'http://api:4000' : 'http://localhost:4000');
 
-export async function POST(request) {
+export async function GET(request) {
   try {
-    // Parse request body
-    const body = await request.json();
+    // Get auth token from cookies
+    const cookieStore = cookies();
+    const token = cookieStore.get('auth_token')?.value;
     
-    // Forward request to API Gateway
-    const response = await axios.post(`${API_URL}/api/chat`, body);
+    if (!token) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: 'Not authenticated' 
+        }, 
+        { status: 401 }
+      );
+    }
+    
+    // Forward request to API Gateway with token
+    const response = await axios.get(`${API_URL}/api/users/me`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
     
     // Return response from API Gateway
     return NextResponse.json(response.data);
   } catch (error) {
-    console.error('Error in chat API route:', error);
+    console.error('Error in me API route:', error);
     
     // Handle different types of errors
     if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
       return NextResponse.json(
         { 
           success: false, 
-          message: error.response.data.message || 'Error from API service' 
+          message: error.response.data.message || 'Failed to get user profile'
         }, 
         { status: error.response.status || 500 }
       );
     } else if (error.request) {
-      // The request was made but no response was received
       return NextResponse.json(
         { 
           success: false, 
@@ -40,7 +53,6 @@ export async function POST(request) {
         { status: 503 }
       );
     } else {
-      // Something happened in setting up the request that triggered an Error
       return NextResponse.json(
         { 
           success: false, 

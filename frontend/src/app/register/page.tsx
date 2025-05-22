@@ -1,0 +1,135 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import RegistrationSteps from '../../components/RegistrationSteps';
+import PersonalInfoForm from '../../components/registration/PersonalInfoForm';
+import PlanSelection from '../../components/registration/PlanSelection';
+import PaymentDetails from '../../components/registration/PaymentDetails';
+
+enum RegistrationStep {
+  PERSONAL_INFO = 1,
+  PLAN_SELECTION = 2,
+  PAYMENT_DETAILS = 3
+}
+
+export default function RegisterPage() {
+  const router = useRouter();
+  const [currentStep, setCurrentStep] = useState<RegistrationStep>(RegistrationStep.PERSONAL_INFO);
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    phoneNumber: '',
+    countryCode: '+1',
+    plan: 'basic',
+    paymentMethod: 'credit',
+    cardNumber: '',
+    cardExpiry: '',
+    cardCvv: ''
+  });
+  
+  const handlePersonalInfoSubmit = (data: any) => {
+    setFormData(prev => ({ ...prev, ...data }));
+    setCurrentStep(RegistrationStep.PLAN_SELECTION);
+  };
+  
+  const handlePlanSubmit = (data: any) => {
+    setFormData(prev => ({ ...prev, ...data }));
+    setCurrentStep(RegistrationStep.PAYMENT_DETAILS);
+  };
+  
+  const handlePaymentSubmit = async (data: any) => {
+    // Combine all data and submit to API
+    const finalFormData = { ...formData, ...data };
+    
+    try {
+      // Import the API utility at runtime to avoid SSR issues
+      const { registerUser } = await import('../../utils/authApi');
+      
+      // Call the API to register user
+      const response = await registerUser(finalFormData);
+      
+      if (response.success) {
+        // Store token in localStorage or cookie
+        document.cookie = `auth_token=${response.data.token}; path=/; max-age=604800; SameSite=Strict`;
+        
+        // Show success message
+        alert('Registration successful! Redirecting to dashboard...');
+        
+        // Redirect to success page or dashboard
+        router.push('/dashboard');
+      } else {
+        alert(`Registration failed: ${response.message}`);
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      alert('An error occurred during registration. Please try again.');
+    }
+  };
+  
+  const handleBack = () => {
+    if (currentStep === RegistrationStep.PLAN_SELECTION) {
+      setCurrentStep(RegistrationStep.PERSONAL_INFO);
+    } else if (currentStep === RegistrationStep.PAYMENT_DETAILS) {
+      setCurrentStep(RegistrationStep.PLAN_SELECTION);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      <div className="flex-grow flex items-center justify-center px-4 py-12">
+        <div className="bg-white bg-opacity-95 rounded-xl shadow-xl w-full max-w-2xl">
+          <div className="p-6 md:p-8">
+            <div className="flex items-center mb-6">
+              <div className="text-3xl text-blue-500 mr-2">🚀</div>
+              <h1 className="text-2xl font-bold text-blue-500">Create Your Account</h1>
+            </div>
+            
+            <RegistrationSteps currentStep={currentStep} />
+            
+            <div className="mt-6">
+              {currentStep === RegistrationStep.PERSONAL_INFO && (
+                <PersonalInfoForm 
+                  initialData={formData} 
+                  onSubmit={handlePersonalInfoSubmit} 
+                />
+              )}
+              
+              {currentStep === RegistrationStep.PLAN_SELECTION && (
+                <PlanSelection 
+                  initialData={formData} 
+                  onSubmit={handlePlanSubmit}
+                  onBack={handleBack}
+                />
+              )}
+              
+              {currentStep === RegistrationStep.PAYMENT_DETAILS && (
+                <PaymentDetails 
+                  initialData={formData}
+                  onSubmit={handlePaymentSubmit}
+                  onBack={handleBack}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer className="bg-gray-200 py-4 text-center text-gray-600">
+        <div className="container mx-auto px-4">
+          <p className="mb-2">© 2025 KidsAsk.AI</p>
+          <div className="flex justify-center space-x-6">
+            <Link href="/about" className="hover:text-gray-900">About Us</Link>
+            <Link href="/terms" className="hover:text-gray-900">Terms of Use</Link>
+            <Link href="/privacy" className="hover:text-gray-900">Privacy Policy</Link>
+            <Link href="/refund" className="hover:text-gray-900">Refund Policy</Link>
+            <Link href="/contact" className="hover:text-gray-900">Contact Us</Link>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
