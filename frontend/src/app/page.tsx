@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import TopicSelector from '../components/TopicSelector';
 import ChatBox from '../components/ChatBox';
 import Header from '../components/Header';
@@ -24,6 +25,7 @@ const topics: Topic[] = [
 ];
 
 export default function Home() {
+  const router = useRouter();
   const [selectedTopic, setSelectedTopic] = useState<number | null>(null);
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -72,7 +74,10 @@ export default function Home() {
   return (
     <main className="min-h-screen flex flex-col">
       <div className="absolute top-4 right-4">
-        <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full transition shadow-lg">
+        <button 
+          onClick={() => router.push('/login')}
+          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full transition shadow-lg"
+        >
           Log In
         </button>
       </div>
@@ -85,7 +90,7 @@ export default function Home() {
               <p className="text-xl text-white mb-8">Where Curiosity Meets Knowledge in a Safe, Fun Environment!</p>
               
               <button 
-                onClick={() => setSelectedTopic(1)}
+                onClick={() => router.push('/register')}
                 className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-full text-lg font-semibold transition transform hover:scale-105 shadow-lg"
               >
                 Register & Start Learning Now
