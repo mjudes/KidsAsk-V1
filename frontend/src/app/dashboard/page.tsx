@@ -10,6 +10,8 @@ export default function DashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isFreeTrial, setIsFreeTrial] = useState(false);
+  const [remainingQuestions, setRemainingQuestions] = useState<number | null>(null);
   
   // Define popular topics
   const popularTopics: Topic[] = [
@@ -38,6 +40,20 @@ export default function DashboardPage() {
         router.push('/login');
       } finally {
         setLoading(false);
+      }
+    }
+    
+    // Check for free trial status
+    const freeTrialData = localStorage.getItem('kidsask_free_trial');
+    if (freeTrialData) {
+      try {
+        const parsedData = JSON.parse(freeTrialData);
+        if (parsedData.isFreeTrialUser) {
+          setIsFreeTrial(true);
+          setRemainingQuestions(parsedData.questionsRemaining || 0);
+        }
+      } catch (e) {
+        console.error('Error parsing free trial data:', e);
       }
     }
     
@@ -74,6 +90,25 @@ export default function DashboardPage() {
           <h1 className="text-2xl font-bold text-gray-800 mb-4">
             Welcome, {user?.fullName}!
           </h1>
+          
+          {isFreeTrial && (
+            <div className="bg-yellow-100 border border-yellow-300 rounded-lg p-4 mb-4">
+              <p className="font-medium text-yellow-800">
+                Free Trial: <span className="font-bold">{remainingQuestions}</span> questions remaining
+              </p>
+              {remainingQuestions === 0 && (
+                <div className="mt-2">
+                  <p className="text-sm text-yellow-800 mb-2">Your free trial has ended. Upgrade to continue learning!</p>
+                  <button 
+                    onClick={() => router.push('/register')}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-lg text-sm transition"
+                  >
+                    Upgrade Now
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
           
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <div className="flex items-center justify-between">
@@ -117,6 +152,17 @@ export default function DashboardPage() {
                     </div>
                   </div>
                 ))}
+                
+                <div 
+                  className="bg-blue-100 rounded-lg p-4 flex items-center hover:bg-blue-200 cursor-pointer transition col-span-1 sm:col-span-2"
+                  onClick={() => router.push('/topics')}
+                >
+                  <div className="text-3xl mr-3">🔍</div>
+                  <div>
+                    <h3 className="font-medium">View All Topics</h3>
+                    <p className="text-sm text-gray-600">Explore all available learning subjects</p>
+                  </div>
+                </div>
               </div>
             </div>
             

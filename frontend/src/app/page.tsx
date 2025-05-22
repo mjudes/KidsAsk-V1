@@ -84,18 +84,26 @@ export default function Home() {
       
       {!selectedTopic ? (
         <>
-          <div className="flex-grow container mx-auto px-4 py-12">
-            <div className="text-center mb-12">
-              <h1 className="text-5xl font-bold text-white mb-3">Welcome to KidsAsk.AI 🚀</h1>
-              <p className="text-xl text-white mb-8">Where Curiosity Meets Knowledge in a Safe, Fun Environment!</p>
-              
+          <div className="flex-grow container mx-auto px-4 py-12">          <div className="text-center mb-12">
+            <h1 className="text-5xl font-bold text-white mb-3">Welcome to KidsAsk.AI 🚀</h1>
+            <p className="text-xl text-white mb-8">Where Curiosity Meets Knowledge in a Safe, Fun Environment!</p>
+            
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <button 
                 onClick={() => router.push('/register')}
                 className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-full text-lg font-semibold transition transform hover:scale-105 shadow-lg"
               >
                 Register & Start Learning Now
               </button>
+              
+              <button 
+                onClick={() => router.push('/topics')}
+                className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-full text-lg font-semibold transition transform hover:scale-105 shadow-lg"
+              >
+                Explore Topics
+              </button>
             </div>
+          </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <div className="bg-white rounded-xl p-6 shadow-lg text-center">

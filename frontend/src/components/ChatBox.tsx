@@ -7,15 +7,17 @@ interface ChatBoxProps {
   messages: ChatMessage[];
   onSendMessage: (message: string) => void;
   isLoading: boolean;
+  disabled?: boolean;
+  placeholder?: string;
 }
 
-export default function ChatBox({ messages, onSendMessage, isLoading }: ChatBoxProps) {
+export default function ChatBox({ messages, onSendMessage, isLoading, disabled = false, placeholder = "Type your question here..." }: ChatBoxProps) {
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (inputValue.trim() && !isLoading) {
+    if (inputValue.trim() && !isLoading && !disabled) {
       onSendMessage(inputValue);
       setInputValue('');
     }
@@ -73,14 +75,14 @@ export default function ChatBox({ messages, onSendMessage, isLoading }: ChatBoxP
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Type your question here..."
+            placeholder={placeholder}
             className="input-field pr-12 flex-grow"
-            disabled={isLoading}
+            disabled={isLoading || disabled}
           />
           <button 
             type="submit" 
             className="send-button"
-            disabled={isLoading || !inputValue.trim()}
+            disabled={isLoading || !inputValue.trim() || disabled}
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="22" y1="2" x2="11" y2="13"></line>
