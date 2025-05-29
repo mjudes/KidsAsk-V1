@@ -1,6 +1,6 @@
 import re
 import logging
-from src.utils.logger_config import setup_logger
+from utils.logger_config import setup_logger
 
 logger = setup_logger()
 

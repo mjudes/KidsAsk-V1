@@ -2,10 +2,10 @@ import os
 import logging
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
-from src.services.ai_service import generate_response
-from src.utils.content_filter import filter_inappropriate_content
-from src.utils.topic_validator import validate_topic
-from src.utils.logger_config import setup_logger
+from services.ai_service import generate_response
+from utils.content_filter import filter_inappropriate_content
+from utils.topic_validator import validate_topic
+from utils.logger_config import setup_logger
 
 # Load environment variables
 load_dotenv()

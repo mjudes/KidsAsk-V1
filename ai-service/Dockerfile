@@ -5,6 +5,7 @@ WORKDIR /app
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements file and install Python dependencies
@@ -14,8 +15,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application
 COPY . .
 
+# Set Python path for module imports
+ENV PYTHONPATH=/app
+
 # Expose the port the app runs on
-EXPOSE 5000
+EXPOSE 5050
 
 # Command to run the application
 CMD ["python", "src/app.py"]

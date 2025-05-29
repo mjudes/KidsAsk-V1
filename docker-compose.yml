@@ -44,6 +44,10 @@ services:
       - ./ai-service:/app
     environment:
       - AI_MODEL_CONFIG_PATH=/app/config/model_config.json
+      - OLLAMA_HOST=http://ollama:11434
+      - OLLAMA_MODEL=tinyllama
+    depends_on:
+      - ollama
     networks:
       - kidsask-network
 
@@ -56,6 +60,17 @@ services:
       - mongodb_data:/data/db
     networks:
       - kidsask-network
+      
+  # Ollama LLM service
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - kidsask-network
+    restart: unless-stopped
 
 networks:
   kidsask-network:
@@ -63,3 +78,4 @@ networks:
 
 volumes:
   mongodb_data:
+  ollama_data:
