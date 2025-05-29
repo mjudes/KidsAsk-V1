@@ -56,9 +56,6 @@ export default function RegisterPage() {
         });
         
         if (response.success) {
-          // Store token in localStorage or cookie
-          document.cookie = `auth_token=${response.data.token}; path=/; max-age=604800; SameSite=Strict`;
-          
           // Store free trial info in localStorage for frontend tracking
           localStorage.setItem('kidsask_free_trial', JSON.stringify({
             isFreeTrialUser: true,
@@ -66,11 +63,8 @@ export default function RegisterPage() {
             startDate: new Date().toISOString()
           }));
           
-          // Show success message
-          alert('Account created successfully! You have 10 free questions to ask.');
-          
-          // Redirect to topics page
-          router.push('/');
+          // Redirect to login page with success message
+          router.push('/login?registered=true');
         } else {
           alert(`Registration failed: ${response.message}`);
         }
@@ -96,14 +90,8 @@ export default function RegisterPage() {
       const response = await registerUser(finalFormData);
       
       if (response.success) {
-        // Store token in localStorage or cookie
-        document.cookie = `auth_token=${response.data.token}; path=/; max-age=604800; SameSite=Strict`;
-        
-        // Show success message
-        alert('Registration successful! Redirecting to dashboard...');
-        
-        // Redirect to success page or dashboard
-        router.push('/dashboard');
+        // Show success message and redirect to login page
+        router.push('/login?registered=true');
       } else {
         alert(`Registration failed: ${response.message}`);
       }

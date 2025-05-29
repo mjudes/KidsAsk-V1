@@ -66,7 +66,34 @@ const userSchema = new mongoose.Schema({
   updatedAt: {
     type: Date,
     default: Date.now,
-  }
+  },
+  // Add additional fields for security tracking
+  loginAttempts: {
+    type: Number,
+    default: 0
+  },
+  lastLoginAttempt: {
+    type: Date
+  },
+  accountLocked: {
+    type: Boolean,
+    default: false
+  },
+  lockUntil: {
+    type: Date
+  },
+  lastLoginIP: {
+    type: String
+  },
+  lastLoginDate: {
+    type: Date
+  },
+  passwordResetToken: {
+    type: String
+  },
+  passwordResetExpires: {
+    type: Date
+  },
 });
 
 // Pre-save middleware to hash password
@@ -78,8 +105,11 @@ userSchema.pre('save', async function(next) {
   }
   
   try {
-    const salt = await bcrypt.genSalt(10);
+    // Use a stronger salt round (12 instead of 10)
+    const salt = await bcrypt.genSalt(12);
     user.password = await bcrypt.hash(user.password, salt);
+    // Update the 'updatedAt' field
+    user.updatedAt = new Date();
     next();
   } catch (error) {
     next(error);
@@ -146,9 +176,10 @@ const registerUser = async (userData) => {
  * Authenticate a user
  * @param {string} email - User email
  * @param {string} password - User password
+ * @param {string} ipAddress - IP address of the request
  * @returns {Promise<Object>} - Authenticated user object
  */
-const authenticateUser = async (email, password) => {
+const authenticateUser = async (email, password, ipAddress = '') => {
   try {
     // Find user by email
     const user = await User.findOne({ email });
@@ -158,11 +189,39 @@ const authenticateUser = async (email, password) => {
       throw new Error('Invalid email or password');
     }
     
+    // Check if account is locked
+    if (user.accountLocked && user.lockUntil && user.lockUntil > new Date()) {
+      throw new Error('Account is temporarily locked. Please try again later or reset your password.');
+    }
+
     // Check if password is correct
     const isMatch = await user.comparePassword(password);
+    
     if (!isMatch) {
+      // Increment login attempts
+      user.loginAttempts += 1;
+      user.lastLoginAttempt = new Date();
+      
+      // Lock account after 5 failed attempts
+      if (user.loginAttempts >= 5) {
+        user.accountLocked = true;
+        // Lock for 30 minutes
+        const lockUntil = new Date();
+        lockUntil.setMinutes(lockUntil.getMinutes() + 30);
+        user.lockUntil = lockUntil;
+      }
+      
+      await user.save();
       throw new Error('Invalid email or password');
     }
+    
+    // Reset login attempts on successful login
+    user.loginAttempts = 0;
+    user.accountLocked = false;
+    user.lockUntil = null;
+    user.lastLoginDate = new Date();
+    user.lastLoginIP = ipAddress;
+    await user.save();
     
     // Return user without password
     const userObject = user.toObject();

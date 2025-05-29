@@ -63,15 +63,25 @@ router.post('/login', validateLogin, async (req, res) => {
   try {
     const { email, password } = req.body;
     
-    // Authenticate user
-    const user = await authenticateUser(email, password);
+    // Get client IP address
+    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     
-    // Generate JWT token
+    // Authenticate user with IP address
+    const user = await authenticateUser(email, password, ip);
+    
+    // Generate JWT token with additional security measures
     const token = jwt.sign(
-      { id: user._id, role: user.role }, 
+      { 
+        id: user._id, 
+        role: user.role,
+        ip: ip, // Include IP in token for additional validation
+        iat: Math.floor(Date.now() / 1000)
+      }, 
       JWT_SECRET,
-      { expiresIn: JWT_EXPIRES_IN }
-    );
+      { 
+        expiresIn: JWT_EXPIRES_IN,
+        algorithm: 'HS256' // Explicitly specify the algorithm
+      });
     
     // Return success response
     res.status(200).json({

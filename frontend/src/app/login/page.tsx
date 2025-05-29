@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -16,6 +16,17 @@ export default function LoginPage() {
     general: ''
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+
+  // Check for registration success query parameter
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const registered = urlParams.get('registered');
+    
+    if (registered === 'true') {
+      setSuccessMessage('Registration successful! Please login with your email and password.');
+    }
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -69,8 +80,8 @@ export default function LoginPage() {
           // Store token in cookie
           document.cookie = `auth_token=${response.data.token}; path=/; max-age=604800; SameSite=Strict`;
           
-          // Redirect to dashboard
-          router.push('/dashboard');
+          // Redirect to topics page
+          router.push('/topics');
         } else {
           setErrors(prev => ({ ...prev, general: response.message || 'Login failed' }));
         }
@@ -91,6 +102,13 @@ export default function LoginPage() {
             <div className="text-3xl text-blue-500 mr-2">🚀</div>
             <h1 className="text-2xl font-bold text-blue-500">Sign In to KidsAsk.AI</h1>
           </div>
+
+          {successMessage && (
+            <div className="mb-6 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-center">
+              <span className="mr-2">✅</span>
+              {successMessage}
+            </div>
+          )}
           
           {errors.general && (
             <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
