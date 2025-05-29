@@ -89,19 +89,12 @@ export default function Home() {
               <h1 className="text-5xl font-bold text-white mb-3">Welcome to KidsAsk.AI 🚀</h1>
               <p className="text-xl text-white mb-8">Where Curiosity Meets Knowledge in a Safe, Fun Environment!</p>
               
-              <div className="flex justify-center gap-4 mb-12">
+              <div className="flex justify-center mb-12">
                 <button 
                   onClick={() => router.push('/register')}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-full text-lg font-medium transition shadow-lg hover-float"
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-10 py-3 rounded-full text-lg font-medium transition shadow-lg hover-float"
                 >
                   Register & Start Learning Now
-                </button>
-                
-                <button 
-                  onClick={() => router.push('/topics')}
-                  className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-full text-lg font-medium transition shadow-lg hover-float"
-                >
-                  Explore Topics
                 </button>
               </div>
             </div>
