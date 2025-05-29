@@ -161,42 +161,48 @@ export default function TopicDetailPage({ params }: { params: { id: string } }) 
   }
   
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-sky-400 to-blue-500">
-      <Header />
-      
-      <div className="flex-grow container mx-auto px-4 py-8">
-        <div className="flex flex-col h-full">
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex items-center">
-              <div className="text-4xl mr-2">{topic.icon}</div>
-              <h2 className="text-2xl font-bold text-white">
-                Topic: {topic.name}
-              </h2>
-            </div>
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-500 to-teal-600">
+      {/* Simple header with back button and topic name */}
+      <div className="bg-white bg-opacity-10 shadow-sm">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center">
             <button 
-              onClick={handleChangeTopic}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition"
+              onClick={() => router.push('/topics')}
+              className="text-white p-2 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors"
+              aria-label="Back to topics"
             >
-              Change Topic
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+              </svg>
             </button>
+            <div className="flex items-center mx-auto">
+              <div className="text-3xl mr-2">{topic.icon}</div>
+              <h1 className="text-xl font-bold text-white">{topic.name}</h1>
+            </div>
+            <div className="w-10"></div> {/* Empty div to balance the layout */}
           </div>
-          
+        </div>
+      </div>
+      
+      <div className="flex-grow container mx-auto px-4 py-4">
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden h-full">
+          {/* Free trial notification if applicable */}
           {isFreeTrial && (
-            <div className="bg-yellow-100 border border-yellow-300 rounded-lg p-3 mb-4">
-              <p className="font-medium text-yellow-800">
+            <div className="bg-yellow-50 border-b border-yellow-200 py-2 px-4">
+              <p className="font-medium text-yellow-800 text-center text-sm">
                 Free Trial: <span className="font-bold">{remainingQuestions}</span> questions remaining
+                {remainingQuestions === 0 && (
+                  <span className="block mt-1">
+                    Your free trial has ended. 
+                    <button 
+                      onClick={() => router.push('/register')}
+                      className="ml-2 bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs transition"
+                    >
+                      Upgrade Now
+                    </button>
+                  </span>
+                )}
               </p>
-              {remainingQuestions === 0 && (
-                <div className="mt-2">
-                  <p className="text-sm text-yellow-800 mb-2">Your free trial has ended. Upgrade to continue learning!</p>
-                  <button 
-                    onClick={() => router.push('/register')}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-lg text-sm transition"
-                  >
-                    Upgrade Now
-                  </button>
-                </div>
-              )}
             </div>
           )}
           
@@ -214,7 +220,13 @@ export default function TopicDetailPage({ params }: { params: { id: string } }) 
         </div>
       </div>
       
-      <Footer />
+      <footer className="py-2 bg-white bg-opacity-10">
+        <div className="container mx-auto px-4">
+          <p className="text-center text-white text-opacity-80 text-xs">
+            © 2025 KidsAsk.AI. All rights reserved.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
