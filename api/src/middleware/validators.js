@@ -114,8 +114,35 @@ const validateLogin = (req, res, next) => {
   next();
 };
 
+/**
+ * Middleware for validating password reset requests
+ */
+const validatePasswordReset = (req, res, next) => {
+  // Define validation schema
+  const schema = Joi.object({
+    email: Joi.string().email().required().trim().lowercase()
+      .pattern(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)
+      .messages({
+        'string.pattern.base': 'Please enter a valid email address'
+      })
+  });
+
+  // Validate request body
+  const { error } = schema.validate(req.body);
+  
+  if (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.details[0].message
+    });
+  }
+
+  next();
+};
+
 module.exports = {
   validateChatRequest,
   validateRegistration,
-  validateLogin
+  validateLogin,
+  validatePasswordReset
 };

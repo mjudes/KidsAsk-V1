@@ -107,3 +107,70 @@ export const logoutUser = async () => {
     throw error;
   }
 };
+
+/**
+ * Request a password reset
+ * @param {string} email - User email
+ * @returns {Promise} - API response
+ */
+export const requestPasswordReset = async (email) => {
+  try {
+    const response = await fetch('/api/auth/reset-password', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    });
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error requesting password reset:', error);
+    throw error;
+  }
+};
+
+/**
+ * Verify a password reset token
+ * @param {string} token - The reset token
+ * @returns {Promise} - API response
+ */
+export const verifyResetToken = async (token) => {
+  try {
+    const response = await fetch(`/api/auth/verify-token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ token }),
+    });
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error verifying reset token:', error);
+    throw error;
+  }
+};
+
+/**
+ * Reset password using token
+ * @param {string} token - The reset token
+ * @param {string} password - The new password
+ * @returns {Promise} - API response
+ */
+export const resetPassword = async (token, password) => {
+  try {
+    const response = await fetch(`/api/auth/reset-password/${token}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ password }),
+    });
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error resetting password:', error);
+    throw error;
+  }
+};
