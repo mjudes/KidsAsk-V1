@@ -108,9 +108,24 @@ export default function TopicsPage() {
     );
   }
   
+  // Function to handle logout
+  const handleLogout = async () => {
+    try {
+      // Import the API utility at runtime
+      const { logoutUser } = await import('../../utils/authApi');
+      await logoutUser();
+      
+      // Remove cookie and redirect to home
+      document.cookie = 'auth_token=; path=/; max-age=0; SameSite=Strict';
+      router.push('/');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-4 right-4 flex space-x-2">
         {!userName ? (
           <button 
             onClick={() => router.push('/login')}
@@ -118,7 +133,17 @@ export default function TopicsPage() {
           >
             Log In
           </button>
-        ) : null}
+        ) : (
+          <button 
+            onClick={handleLogout}
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full transition shadow-lg flex items-center"
+          >
+            <span>Logout</span>
+            <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+          </button>
+        )}
       </div>
       
       {userName && (
