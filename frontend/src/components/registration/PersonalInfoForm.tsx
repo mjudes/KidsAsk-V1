@@ -195,21 +195,39 @@ export default function PersonalInfoForm({ initialData, onSubmit }: PersonalInfo
         
         <div>
           <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-1">
-            Phone Number <span className="text-gray-500">(Optional)</span>
+            Phone Number
           </label>
           <div className="flex">
             <select
               name="countryCode"
               value={formData.countryCode}
               onChange={handleChange}
-              className="px-3 py-2 rounded-l-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 rounded-l-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[120px]"
             >
-              <option value="+1">+1 (US)</option>
-              <option value="+44">+44 (UK)</option>
-              <option value="+61">+61 (AU)</option>
-              <option value="+91">+91 (IN)</option>
-              <option value="+49">+49 (DE)</option>
-              {/* Add more country codes as needed */}
+              <option value="+1">🇺🇸 +1 (US)</option>
+              <option value="+1">🇨🇦 +1 (CA)</option>
+              <option value="+44">🇬🇧 +44 (UK)</option>
+              <option value="+61">🇦🇺 +61 (AU)</option>
+              <option value="+64">🇳🇿 +64 (NZ)</option>
+              <option value="+91">🇮🇳 +91 (IN)</option>
+              <option value="+49">🇩🇪 +49 (DE)</option>
+              <option value="+33">🇫🇷 +33 (FR)</option>
+              <option value="+39">🇮🇹 +39 (IT)</option>
+              <option value="+34">🇪🇸 +34 (ES)</option>
+              <option value="+81">🇯🇵 +81 (JP)</option>
+              <option value="+86">🇨🇳 +86 (CN)</option>
+              <option value="+82">🇰🇷 +82 (KR)</option>
+              <option value="+55">🇧🇷 +55 (BR)</option>
+              <option value="+52">🇲🇽 +52 (MX)</option>
+              <option value="+27">🇿🇦 +27 (ZA)</option>
+              <option value="+65">🇸🇬 +65 (SG)</option>
+              <option value="+971">🇦🇪 +971 (AE)</option>
+              <option value="+972">🇮🇱 +972 (IL)</option>
+              <option value="+966">🇸🇦 +966 (SA)</option>
+              <option value="+7">🇷🇺 +7 (RU)</option>
+              <option value="+20">🇪🇬 +20 (EG)</option>
+              <option value="+234">🇳🇬 +234 (NG)</option>
+              <option value="+254">🇰🇪 +254 (KE)</option>
             </select>
             <input
               type="tel"
