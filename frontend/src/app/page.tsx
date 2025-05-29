@@ -84,80 +84,91 @@ export default function Home() {
       
       {!selectedTopic ? (
         <>
-          <div className="flex-grow container mx-auto px-4 py-12">          <div className="text-center mb-12">
-            <h1 className="text-5xl font-bold text-white mb-3">Welcome to KidsAsk.AI 🚀</h1>
-            <p className="text-xl text-white mb-8">Where Curiosity Meets Knowledge in a Safe, Fun Environment!</p>
-            
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <button 
-                onClick={() => router.push('/register')}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-full text-lg font-semibold transition transform hover:scale-105 shadow-lg"
-              >
-                Register & Start Learning Now
-              </button>
+          <div className="flex-grow container mx-auto px-4 py-12">
+            <div className="text-center mb-8">
+              <h1 className="text-5xl font-bold text-white mb-3">Welcome to KidsAsk.AI 🚀</h1>
+              <p className="text-xl text-white mb-8">Where Curiosity Meets Knowledge in a Safe, Fun Environment!</p>
               
-              <button 
-                onClick={() => router.push('/topics')}
-                className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-full text-lg font-semibold transition transform hover:scale-105 shadow-lg"
-              >
-                Explore Topics
-              </button>
+              <div className="flex justify-center gap-4 mb-12">
+                <button 
+                  onClick={() => router.push('/register')}
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-full text-lg font-medium transition shadow-lg hover-float"
+                >
+                  Register & Start Learning Now
+                </button>
+                
+                <button 
+                  onClick={() => router.push('/topics')}
+                  className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-full text-lg font-medium transition shadow-lg hover-float"
+                >
+                  Explore Topics
+                </button>
+              </div>
             </div>
-          </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-white rounded-xl p-6 shadow-lg text-center">
-                <div className="text-4xl text-yellow-400 mb-3">💡</div>
-                <h3 className="text-xl font-bold text-blue-500 mb-2">Sparks Curiosity</h3>
-                <p className="text-gray-600">Safe environment for endless exploration.</p>
+              <div className="bg-white rounded-lg p-4 text-center">
+                <div className="mb-2">
+                  <span className="text-3xl">💡</span>
+                </div>
+                <h3 className="text-blue-500 font-medium mb-1">Sparks Curiosity</h3>
+                <p className="text-sm">Safe environment for endless exploration.</p>
               </div>
               
-              <div className="bg-white rounded-xl p-6 shadow-lg text-center">
-                <div className="text-4xl text-green-500 mb-3">🎓</div>
-                <h3 className="text-xl font-bold text-green-600 mb-2">Educational Growth</h3>
-                <p className="text-gray-600">Learning aligned with education standards.</p>
+              <div className="bg-white rounded-lg p-4 text-center">
+                <div className="mb-2">
+                  <span className="text-3xl">🎓</span>
+                </div>
+                <h3 className="text-green-600 font-medium mb-1">Educational Growth</h3>
+                <p className="text-sm">Learning aligned with education standards.</p>
               </div>
               
-              <div className="bg-white rounded-xl p-6 shadow-lg text-center">
-                <div className="text-4xl text-red-500 mb-3">🛡️</div>
-                <h3 className="text-xl font-bold text-purple-600 mb-2">Safe Learning</h3>
-                <p className="text-gray-600">Parent-controlled, kid-friendly content.</p>
+              <div className="bg-white rounded-lg p-4 text-center">
+                <div className="mb-2">
+                  <span className="text-3xl">🛡️</span>
+                </div>
+                <h3 className="text-purple-600 font-medium mb-1">Safe Learning</h3>
+                <p className="text-sm">Parent-controlled, kid-friendly content.</p>
               </div>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              <div className="bg-white rounded-xl p-6 shadow-lg text-center">
-                <div className="text-4xl text-pink-500 mb-3">🚀</div>
-                <h3 className="text-xl font-bold text-pink-500 mb-2">Interactive Learning</h3>
-                <p className="text-gray-600">Personalized to your child's interests.</p>
+              <div className="bg-white rounded-lg p-4 text-center">
+                <div className="mb-2">
+                  <span className="text-3xl">🚀</span>
+                </div>
+                <h3 className="text-pink-500 font-medium mb-1">Interactive Learning</h3>
+                <p className="text-sm">Personalized to your child's interests.</p>
               </div>
               
-              <div className="bg-white rounded-xl p-6 shadow-lg text-center">
-                <div className="text-4xl text-orange-500 mb-3">🎤</div>
-                <h3 className="text-xl font-bold text-orange-500 mb-2">Voice Interaction</h3>
-                <p className="text-gray-600">Ask questions by voice and get friendly audio responses.</p>
+              <div className="bg-white rounded-lg p-4 text-center">
+                <div className="mb-2">
+                  <span className="text-3xl">✏️</span>
+                </div>
+                <h3 className="text-orange-500 font-medium mb-1">Voice Interaction</h3>
+                <p className="text-sm">Ask questions by voice and get friendly audio responses.</p>
               </div>
             </div>
             
             <div className="flex justify-center mb-8">
-              <div className="bg-white rounded-xl p-6 shadow-lg text-center w-full max-w-md">
-                <div className="text-4xl text-purple-500 mb-3">🏆</div>
-                <h3 className="text-xl font-bold text-purple-500 mb-2">Fun Achievements</h3>
-                <p className="text-gray-600">Earn badges and rewards through interactive quizzes.</p>
+              <div className="bg-white rounded-lg p-4 text-center w-full max-w-md">
+                <div className="mb-2">
+                  <span className="text-3xl">🏆</span>
+                </div>
+                <h3 className="text-purple-500 font-medium mb-1">Fun Achievements</h3>
+                <p className="text-sm">Earn badges and rewards through interactive quizzes.</p>
               </div>
             </div>
           </div>
           
-          <footer className="bg-gray-200 py-4 text-center text-gray-600">
-            <div className="container mx-auto px-4">
-              <p className="mb-2">© 2025 KidsAsk.AI</p>
-              <div className="flex justify-center space-x-6">
-                <a href="#" className="hover:text-gray-900">About Us</a>
-                <a href="#" className="hover:text-gray-900">Terms of Use</a>
-                <a href="#" className="hover:text-gray-900">Privacy Policy</a>
-                <a href="#" className="hover:text-gray-900">Refund Policy</a>
-                <a href="#" className="hover:text-gray-900">Contact Us</a>
-              </div>
+          <footer className="bg-gray-100 py-4 text-center text-gray-600 mt-auto">
+            <p className="mb-2">© 2025 KidsAsk.AI</p>
+            <div className="flex justify-center space-x-6">
+              <a href="#" className="text-sm hover:text-gray-900">About Us</a>
+              <a href="#" className="text-sm hover:text-gray-900">Terms of Use</a>
+              <a href="#" className="text-sm hover:text-gray-900">Privacy Policy</a>
+              <a href="#" className="text-sm hover:text-gray-900">Refund Policy</a>
+              <a href="#" className="text-sm hover:text-gray-900">Contact Us</a>
             </div>
           </footer>
         </>

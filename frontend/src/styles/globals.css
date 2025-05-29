@@ -5,18 +5,22 @@
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start: #4caf50;  /* Green */
-  --background-end: #3498db;    /* Blue */
+  --background-end: #2980b9;    /* Deeper blue to match mockup */
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(135deg, var(--background-start) 0%, var(--background-end) 100%);
+  background: linear-gradient(120deg, var(--background-start) 0%, var(--background-end) 100%);
   min-height: 100vh;
 }
 
 @layer components {
   .topic-card {
     @apply bg-white rounded-xl shadow-lg p-4 cursor-pointer transform transition-transform duration-200 hover:scale-105 border-2 border-transparent hover:border-blue-400;
+  }
+  
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-green-500;
   }
   
   .message-bubble {
@@ -37,5 +41,18 @@ body {
   
   .send-button {
     @apply bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2 absolute right-2 top-1/2 transform -translate-y-1/2;
+  }
+  
+  .hover-float {
+    @apply transition-transform duration-300 hover:-translate-y-1;
+  }
+  
+  .fade-in {
+    @apply animate-[fadeIn_0.5s_ease-in-out];
+  }
+  
+  @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
   }
 }
