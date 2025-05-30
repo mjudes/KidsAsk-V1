@@ -15,12 +15,6 @@ services:
       - NODE_ENV=development
       - FLASK_DEBUG=true
 
-  # AI Service with debug mode
-  ai-service:
-    environment:
-      - FLASK_DEBUG=true
-      - LOG_LEVEL=DEBUG
-
   # MongoDB with exposed ports
   database:
     ports:

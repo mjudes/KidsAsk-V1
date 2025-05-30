@@ -34,26 +34,6 @@ fi
 
 print_section "KidsAsk.ai Setup"
 
-# Check for OpenAI API key
-if [ ! -f "./ai-service/.env" ] || ! grep -q "OPENAI_API_KEY" "./ai-service/.env"; then
-    print_warning "OpenAI API key not found in ai-service/.env"
-    echo -e "Please enter your OpenAI API key (or press Enter to skip):"
-    read api_key
-    
-    if [ -n "$api_key" ]; then
-        # Copy example env if it doesn't exist
-        if [ ! -f "./ai-service/.env" ]; then
-            cp ./ai-service/.env.example ./ai-service/.env
-        fi
-        
-        # Update the API key in the .env file
-        sed -i '' "s/your_openai_api_key_here/$api_key/" ./ai-service/.env
-        echo -e "${GREEN}API key has been set.${NC}"
-    else
-        echo -e "${YELLOW}No API key provided. You'll need to set it in ai-service/.env before the AI service will work properly.${NC}"
-    fi
-fi
-
 # Create .env files if they don't exist
 for service in "frontend" "api"; do
     if [ ! -f "./$service/.env" ] && [ -f "./$service/.env.example" ]; then
@@ -73,10 +53,18 @@ read -p "Enter your choice (1/2): " env_choice
 case $env_choice in
     1)
         print_section "Building and starting services in development mode"
-        docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+        export NODE_ENV=development
+        export FLASK_DEBUG=true
+        export FRONTEND_COMMAND="npm run dev"
+        export API_COMMAND="npm run dev"
+        docker compose up -d --build
         ;;
     2)
         print_section "Building and starting services in production mode"
+        export NODE_ENV=production
+        export FLASK_DEBUG=false
+        export FRONTEND_COMMAND="npm start"
+        export API_COMMAND="npm start"
         docker compose up -d --build
         ;;
     *)
@@ -88,7 +76,6 @@ esac
 print_section "KidsAsk.ai is starting up!"
 echo -e "Frontend will be available at: ${GREEN}http://localhost:3050${NC}"
 echo -e "API Gateway will be available at: ${GREEN}http://localhost:4000${NC}"
-echo -e "AI Service will be available at: ${GREEN}http://localhost:5050${NC}"
 echo ""
 echo -e "${YELLOW}NOTE: It may take a few moments for all services to fully initialize.${NC}"
 echo ""

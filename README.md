@@ -1,13 +1,10 @@
 # KidsAsk.ai
 
-KidsAsk.ai is a kid-friendly AI assistant websi4. Access the application
-   - Frontend: http://localhost:3050
-   - API Gateway: http://localhost:4000
-   - AI Service: http://localhost:5050hat answers children's questions on specific educational topics. The platform is designed to be safe, educational, and engaging for children while providing accurate information in an age-appropriate manner.
+KidsAsk.ai is a kid-friendly educational website that answers children's questions on specific educational topics. The platform is designed to be safe, educational, and engaging for children while providing accurate information in an age-appropriate manner.
 
 ## Features
 
-- **Kid-friendly AI responses**: Tailored for children aged 5-12
+- **Kid-friendly responses**: Tailored for children aged 5-12
 - **Topic-based questions**: Focused on 12 educational topics
 - **Content filtering**: Ensures all interactions are appropriate for children
 - **Responsive design**: Works on desktops, tablets, and mobile devices
@@ -34,8 +31,8 @@ KidsAsk.ai focuses on the following educational topics:
 
 - **Frontend**: Next.js, React, TailwindCSS
 - **API Gateway**: Node.js, Express
-- **AI Service**: Python, Flask, OpenAI
 - **Database**: MongoDB
+- **AI Engine**: Ollama (Llama 2 model)
 - **Infrastructure**: Docker, Docker Compose
 
 ## Getting Started
@@ -43,7 +40,6 @@ KidsAsk.ai focuses on the following educational topics:
 ### Prerequisites
 
 - Docker and Docker Compose
-- OpenAI API key
 
 ### Installation
 
@@ -55,17 +51,27 @@ KidsAsk.ai focuses on the following educational topics:
 
 2. Set up environment variables
    - Copy the `.env.example` files in each service directory to `.env`
-   - Update the OpenAI API key in `ai-service/.env`
 
 3. Build and start the containers
    ```bash
-   docker-compose up -d --build
+   docker compose up -d --build
    ```
 
 4. Access the application
    - Frontend: http://localhost:3050
    - API Gateway: http://localhost:4000
-   - AI Service: http://localhost:5050
+   - Ollama API: http://localhost:5050
+   - Ollama Engine: http://localhost:11434
+
+### Performance Optimization
+
+For optimal performance on your MacBook Pro, you can run the tuning script:
+
+```bash
+./ollama-tune.sh
+```
+
+This will detect your hardware and recommend the best settings for running the Ollama AI service.
 
 ## Development
 
@@ -75,21 +81,19 @@ KidsAsk.ai focuses on the following educational topics:
 kidsask-ai/
 ├── docker-compose.yml    # Docker Compose configuration
 ├── frontend/            # Next.js frontend
-├── api/                 # Express API gateway
-└── ai-service/          # Flask AI service
+└── api/                 # Express API gateway
 ```
 
 ### Running in Development Mode
 
 ```bash
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+# Either use the run.sh script and select option 1
+./run.sh
+
+# Or use the start-dev.sh script
+./start-dev.sh
 ```
 
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- OpenAI for the underlying language model
-- All contributors to the educational content

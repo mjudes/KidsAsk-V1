@@ -1,1 +1,3 @@
-cd /Users/meronj/meron-dev-projects/KidsAsk-V1 && docker-compose -f docker-compose.yml down
+#!/bin/bash
+
+cd /Users/meronj/meron-dev-projects/KidsAsk-V1 && docker compose down

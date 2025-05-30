@@ -1,9 +1,10 @@
 const express = require('express');
-const axios = require('axios');
 const router = express.Router();
 const logger = require('../config/logger');
 const { validateChatRequest } = require('../middleware/validators');
 const { saveChat } = require('../models/chat');
+const { generateResponse: generateLocalResponse } = require('../services/local_ai_service');
+const { generateResponse: generateOllamaResponse, isServiceAvailable } = require('../services/ollama_ai_service');
 
 /**
  * Process a chat request
@@ -42,26 +43,39 @@ router.post('/', validateChatRequest, async (req, res) => {
 
     // Get the current topic name
     const topicName = topicMap[topicId];
+    const topic = { id: topicId, name: topicName };
 
-    // Forward the request to the AI service
-    const aiResponse = await axios.post(process.env.AI_SERVICE_URL + '/generate', {
-      message,
-      topic: topicName,
-      history
-    });
+    // Determine if we should use the Ollama service or fall back to local
+    let aiResponse;
+    try {
+      // Check if Ollama service is available
+      if (await isServiceAvailable()) {
+        logger.info(`Using Ollama AI service for topic: ${topicName}`);
+        aiResponse = await generateOllamaResponse(message, topic, history);
+      } else {
+        logger.info(`Ollama service unavailable, using local AI for topic: ${topicName}`);
+        aiResponse = await generateLocalResponse(message, topic, history);
+      }
+    } catch (error) {
+      logger.error(`Error with AI services: ${error.message}`);
+      // Fallback to guaranteed local response if all else fails
+      aiResponse = { response: generateLocalResponse(message, topicId), source: 'local-fallback' };
+    }
 
     // Save the chat message to the database
     await saveChat({
       message,
-      response: aiResponse.data.response,
+      response: aiResponse.response,
       topicId,
-      timestamp: new Date()
+      timestamp: new Date(),
+      source: aiResponse.source || 'local'
     });
 
-    // Return the AI service response
+    // Return the response
     return res.json({
       success: true,
-      response: aiResponse.data.response
+      response: aiResponse.response,
+      source: aiResponse.source || 'local'
     });
     
   } catch (error) {

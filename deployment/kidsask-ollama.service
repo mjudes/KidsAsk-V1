@@ -1,0 +1,15 @@
+[Unit]
+Description=KidsAsk Ollama AI Service
+After=network.target docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/opt/kidsask
+ExecStart=/usr/bin/docker compose up -d ollama-service ollama-api
+ExecStop=/usr/bin/docker compose stop ollama-service ollama-api
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target

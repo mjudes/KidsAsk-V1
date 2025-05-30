@@ -1,4 +1,5 @@
-version: '3.8'
+# Docker Compose configuration for KidsAsk.ai
+# Supports both production and development modes through environment variables
 
 services:
   # Frontend service
@@ -11,6 +12,8 @@ services:
       - /app/node_modules
     environment:
       - NEXT_PUBLIC_RUNTIME_ENV=docker
+      - NODE_ENV=${NODE_ENV:-production}
+    command: ${FRONTEND_COMMAND:-npm start}
     depends_on:
       - api
     networks:
@@ -25,25 +28,55 @@ services:
       - ./api:/app
       - /app/node_modules
     depends_on:
-      - ai-service
       - database
+      - ollama-api
     environment:
       - DB_HOST=database
       - DB_PORT=27017
       - DB_NAME=kidsaskdb
-      - AI_SERVICE_URL=http://ai-service:5050
+      - NODE_ENV=${NODE_ENV:-production}
+      - FLASK_DEBUG=${FLASK_DEBUG:-false}
+      - AI_SERVICE_URL=http://ollama-api:5000
+    command: ${API_COMMAND:-npm start}
+    networks:
+      - kidsask-network
+      
+  # Ollama AI Engine Service
+  ollama-service:
+    build:
+      context: ./ollama-service
+      dockerfile: Dockerfile
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
     networks:
       - kidsask-network
 
-  # AI Service for processing questions
-  ai-service:
-    build: ./ai-service
+  # Ollama API Service (for integration with the main API)
+  ollama-api:
+    build:
+      context: ./ollama-service
+      dockerfile: Dockerfile.api
     ports:
-      - "5050:5050"
+      - "5050:5000"
     volumes:
-      - ./ai-service:/app
+      - ./ollama-service/src:/app
+      - ./ollama-service/config:/app/config
+    depends_on:
+      - ollama-service
     environment:
-      - AI_MODEL_CONFIG_PATH=/app/config/model_config.json
+      - OLLAMA_HOST=ollama-service
+      - OLLAMA_PORT=11434
+      - OLLAMA_MODEL=tinyllama
+      - FLASK_DEBUG=${FLASK_DEBUG:-false}
+      - PORT=5000
     networks:
       - kidsask-network
 
@@ -63,3 +96,4 @@ networks:
 
 volumes:
   mongodb_data:
+  ollama_data:
