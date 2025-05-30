@@ -34,24 +34,56 @@ fi
 
 print_section "KidsAsk.ai Setup"
 
-# Check for OpenAI API key
-if [ ! -f "./ai-service/.env" ] || ! grep -q "OPENAI_API_KEY" "./ai-service/.env"; then
-    print_warning "OpenAI API key not found in ai-service/.env"
-    echo -e "Please enter your OpenAI API key (or press Enter to skip):"
-    read api_key
+# Check for Ollama models
+if command -v ollama &> /dev/null; then
+    print_section "Checking for Ollama models"
     
-    if [ -n "$api_key" ]; then
-        # Copy example env if it doesn't exist
-        if [ ! -f "./ai-service/.env" ]; then
-            cp ./ai-service/.env.example ./ai-service/.env
-        fi
+    # Check if Ollama is already running in Docker
+    if ! curl -s --head http://localhost:11434/api/tags > /dev/null; then
+        print_warning "Starting Ollama service first"
+        docker compose up -d ollama
         
-        # Update the API key in the .env file
-        sed -i '' "s/your_openai_api_key_here/$api_key/" ./ai-service/.env
-        echo -e "${GREEN}API key has been set.${NC}"
-    else
-        echo -e "${YELLOW}No API key provided. You'll need to set it in ai-service/.env before the AI service will work properly.${NC}"
+        # Wait for Ollama to start
+        echo "Waiting for Ollama service to start..."
+        for i in {1..30}; do
+            if curl -s --head http://localhost:11434/api/tags > /dev/null; then
+                echo -e "${GREEN}Ollama service is up and running!${NC}"
+                break
+            fi
+            if [ $i -eq 30 ]; then
+                print_error "Ollama service failed to start within the expected time."
+                echo "You may need to check the logs: docker compose logs ollama"
+            fi
+            sleep 2
+        done
     fi
+    
+    # Check if required models are downloaded
+    echo "Checking for required Ollama models..."
+    
+    models_to_pull=()
+    if ! ollama list | grep -q "gemma:2b"; then
+        models_to_pull+=("gemma:2b")
+    fi
+    
+    if ! ollama list | grep -q "llama2:7b"; then
+        models_to_pull+=("llama2:7b")
+    fi
+    
+    if [ ${#models_to_pull[@]} -gt 0 ]; then
+        print_warning "Some required models are not downloaded. Pulling them now..."
+        for model in "${models_to_pull[@]}"; do
+            echo "Pulling $model (this may take a while)..."
+            ollama pull $model
+        done
+        echo -e "${GREEN}All required models have been downloaded.${NC}"
+    else
+        echo -e "${GREEN}All required models are already downloaded.${NC}"
+    fi
+else
+    print_warning "Ollama CLI not found. Models will need to be pulled within the container."
+    echo "The models will be downloaded automatically when the service starts."
+    echo "This may take a while on first run."
 fi
 
 # Create .env files if they don't exist

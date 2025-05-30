@@ -10,12 +10,16 @@ RUN apt-get update && apt-get install -y \
 # Copy requirements file and install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install openai
 
 # Copy the rest of the application
 COPY . .
 
+# Make sure we set PYTHONPATH correctly
+ENV PYTHONPATH=/app
+
 # Expose the port the app runs on
-EXPOSE 5000
+EXPOSE 5050
 
 # Command to run the application
 CMD ["python", "src/app.py"]
