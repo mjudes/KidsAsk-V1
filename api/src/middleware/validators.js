@@ -59,22 +59,24 @@ const validateRegistration = (req, res, next) => {
     paymentMethod: Joi.string().valid('credit', 'paypal'),
     cardNumber: Joi.when('paymentMethod', {
       is: 'credit',
-      then: Joi.string().pattern(/^\d{16}$/).messages({
-        'string.pattern.base': 'Card number must be 16 digits'
+      then: Joi.string().required().pattern(/^\d{16}$/).messages({
+        'string.pattern.base': 'Card number must be 16 digits',
+        'any.required': 'Card number is required for credit card payments'
       }),
-      otherwise: Joi.optional()
+      otherwise: Joi.optional().allow(null, '')
     }),
     cardExpiry: Joi.when('paymentMethod', {
       is: 'credit',
-      then: Joi.string(),
-      otherwise: Joi.optional()
+      then: Joi.string().required(),
+      otherwise: Joi.optional().allow(null, '')
     }),
     cardCvv: Joi.when('paymentMethod', {
       is: 'credit',
-      then: Joi.string().pattern(/^\d{3,4}$/).messages({
-        'string.pattern.base': 'CVV must be 3 or 4 digits'
+      then: Joi.string().required().pattern(/^\d{3,4}$/).messages({
+        'string.pattern.base': 'CVV must be 3 or 4 digits',
+        'any.required': 'CVV is required for credit card payments'
       }),
-      otherwise: Joi.optional()
+      otherwise: Joi.optional().allow(null, '')
     })
   });
 

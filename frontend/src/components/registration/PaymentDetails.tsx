@@ -85,52 +85,55 @@ export default function PaymentDetails({ initialData, onSubmit, onBack }: Paymen
     };
     let isValid = true;
 
-    // Card number validation - should be 16 digits (ignoring spaces)
-    const cardNumberDigits = formData.cardNumber.replace(/\s/g, '');
-    if (!cardNumberDigits) {
-      newErrors.cardNumber = 'Card number is required';
-      isValid = false;
-    } else if (cardNumberDigits.length !== 16) {
-      newErrors.cardNumber = 'Card number must be 16 digits';
-      isValid = false;
-    }
+    // Only validate card details if payment method is credit
+    if (formData.paymentMethod === 'credit') {
+      // Card number validation - should be 16 digits (ignoring spaces)
+      const cardNumberDigits = formData.cardNumber.replace(/\s/g, '');
+      if (!cardNumberDigits) {
+        newErrors.cardNumber = 'Card number is required';
+        isValid = false;
+      } else if (cardNumberDigits.length !== 16) {
+        newErrors.cardNumber = 'Card number must be 16 digits';
+        isValid = false;
+      }
 
-    // Expiry date validation (MM/YY format)
-    if (!formData.cardExpiry) {
-      newErrors.cardExpiry = 'Expiry date is required';
-      isValid = false;
-    } else {
-      const [month, year] = formData.cardExpiry.split('/');
-      const currentYear = new Date().getFullYear() % 100; // Get last 2 digits of year
-      const currentMonth = new Date().getMonth() + 1; // Get current month (1-12)
-      
-      if (!month || !year || month.length !== 2 || year.length !== 2) {
-        newErrors.cardExpiry = 'Expiry date must be in MM/YY format';
+      // Expiry date validation (MM/YY format)
+      if (!formData.cardExpiry) {
+        newErrors.cardExpiry = 'Expiry date is required';
         isValid = false;
       } else {
-        const monthNum = parseInt(month);
-        const yearNum = parseInt(year);
+        const [month, year] = formData.cardExpiry.split('/');
+        const currentYear = new Date().getFullYear() % 100; // Get last 2 digits of year
+        const currentMonth = new Date().getMonth() + 1; // Get current month (1-12)
         
-        if (monthNum < 1 || monthNum > 12) {
-          newErrors.cardExpiry = 'Invalid month';
+        if (!month || !year || month.length !== 2 || year.length !== 2) {
+          newErrors.cardExpiry = 'Expiry date must be in MM/YY format';
           isValid = false;
-        } else if (
-          yearNum < currentYear || 
-          (yearNum === currentYear && monthNum < currentMonth)
-        ) {
-          newErrors.cardExpiry = 'Card has expired';
-          isValid = false;
+        } else {
+          const monthNum = parseInt(month);
+          const yearNum = parseInt(year);
+          
+          if (monthNum < 1 || monthNum > 12) {
+            newErrors.cardExpiry = 'Invalid month';
+            isValid = false;
+          } else if (
+            yearNum < currentYear || 
+            (yearNum === currentYear && monthNum < currentMonth)
+          ) {
+            newErrors.cardExpiry = 'Card has expired';
+            isValid = false;
+          }
         }
       }
-    }
 
-    // CVV validation
-    if (!formData.cardCvv) {
-      newErrors.cardCvv = 'Security code is required';
-      isValid = false;
-    } else if (formData.cardCvv.length < 3) {
-      newErrors.cardCvv = 'Security code must be 3 or 4 digits';
-      isValid = false;
+      // CVV validation
+      if (!formData.cardCvv) {
+        newErrors.cardCvv = 'Security code is required';
+        isValid = false;
+      } else if (formData.cardCvv.length < 3) {
+        newErrors.cardCvv = 'Security code must be 3 or 4 digits';
+        isValid = false;
+      }
     }
 
     // Terms acceptance validation
@@ -149,7 +152,18 @@ export default function PaymentDetails({ initialData, onSubmit, onBack }: Paymen
     if (validateForm()) {
       setIsSubmitting(true);
       try {
-        await onSubmit(formData);
+        // If payment method is PayPal, ensure card details are not sent
+        if (formData.paymentMethod === 'paypal') {
+          const paypalData = {
+            ...formData,
+            cardNumber: undefined,
+            cardExpiry: undefined,
+            cardCvv: undefined
+          };
+          await onSubmit(paypalData);
+        } else {
+          await onSubmit(formData);
+        }
       } catch (error) {
         console.error('Payment submission error:', error);
       } finally {
