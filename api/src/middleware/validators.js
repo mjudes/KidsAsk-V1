@@ -56,6 +56,8 @@ const validateRegistration = (req, res, next) => {
     countryCode: Joi.string().trim(),
     phoneNumber: Joi.string().trim().allow(''),
     plan: Joi.string().valid('basic', 'standard', 'premium'),
+    isFreeTrialUser: Joi.boolean().optional(),
+    questionsRemaining: Joi.number().optional(),
     paymentMethod: Joi.string().valid('credit', 'paypal'),
     cardNumber: Joi.when('paymentMethod', {
       is: 'credit',

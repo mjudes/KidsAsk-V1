@@ -52,7 +52,11 @@ export default function RegisterPage() {
           ...updatedFormData,
           plan: 'basic', // Map freeTrial to basic for backend compatibility
           isFreeTrialUser: true,
-          questionsRemaining: 10
+          questionsRemaining: 10,
+          paymentMethod: 'paypal', // Set a default payment method to avoid validation issues
+          cardNumber: '', // Ensure these are empty strings, not undefined
+          cardExpiry: '',
+          cardCvv: ''
         });
         
         if (response.success) {
@@ -70,7 +74,16 @@ export default function RegisterPage() {
         }
       } catch (error) {
         console.error('Registration error:', error);
-        alert('An error occurred during registration. Please try again.');
+        let errorMessage = 'An error occurred during registration. Please try again.';
+        
+        // Extract the specific error message if available
+        if (error instanceof Error) {
+          errorMessage = error.message;
+        } else if (typeof error === 'object' && error !== null && 'message' in error) {
+          errorMessage = error.message;
+        }
+        
+        alert(errorMessage);
       }
     } else {
       // Continue to payment details for paid plans

@@ -58,6 +58,14 @@ const userSchema = new mongoose.Schema({
       type: String,
       enum: ['credit', 'paypal'],
     },
+    isFreeTrialUser: {
+      type: Boolean,
+      default: false
+    },
+    questionsRemaining: {
+      type: Number,
+      default: null
+    }
   },
   createdAt: {
     type: Date,
@@ -130,7 +138,17 @@ const User = mongoose.model('User', userSchema);
  */
 const registerUser = async (userData) => {
   try {
-    const { fullName, email, password, countryCode, phoneNumber, plan, paymentMethod } = userData;
+    const { 
+      fullName, 
+      email, 
+      password, 
+      countryCode, 
+      phoneNumber, 
+      plan, 
+      paymentMethod,
+      isFreeTrialUser,
+      questionsRemaining
+    } = userData;
     
     // Check if user with the email already exists
     const existingUser = await User.findOne({ email });
@@ -154,7 +172,9 @@ const registerUser = async (userData) => {
         startDate: new Date(),
         endDate: endDate,
         status: 'active',
-        paymentMethod: paymentMethod || 'credit',
+        paymentMethod: paymentMethod || 'paypal',
+        isFreeTrialUser: !!isFreeTrialUser,
+        questionsRemaining: isFreeTrialUser ? (questionsRemaining || 10) : null
       }
     });
     
