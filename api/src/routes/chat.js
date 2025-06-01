@@ -42,13 +42,25 @@ router.post('/', validateChatRequest, async (req, res) => {
 
     // Get the current topic name
     const topicName = topicMap[topicId];
+    
+    // Optimize the message and history before sending to AI service
+    const optimizedMessage = message.trim().slice(0, 500); // Limit message length
+    
+    // Limit history to last 3 exchanges to reduce context size
+    const optimizedHistory = Array.isArray(history) && history.length > 3 
+      ? history.slice(-3) 
+      : history || [];
 
-    // Forward the request to the AI service
-    const aiResponse = await axios.post(process.env.AI_SERVICE_URL + '/generate', {
-      message,
-      topic: topicName,
-      history
-    });
+    // Forward the request to the AI service with timeout
+    const aiResponse = await axios.post(
+      process.env.AI_SERVICE_URL + '/generate', 
+      {
+        message: optimizedMessage,
+        topic: topicName,
+        history: optimizedHistory
+      }, 
+      { timeout: 15000 } // 15 second timeout
+    );
 
     // Save the chat message to the database
     await saveChat({
@@ -66,9 +78,29 @@ router.post('/', validateChatRequest, async (req, res) => {
     
   } catch (error) {
     logger.error('Error in chat route:', error);
+    
+    // Provide more specific error messages for different types of errors
+    if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+      return res.status(503).json({
+        success: false,
+        message: 'The AI service is taking too long to respond. Please try again.',
+        response: 'I\'m thinking too hard! Could you try asking me again in a moment?'
+      });
+    }
+    
+    if (error.response) {
+      // The AI service returned an error response
+      return res.status(error.response.status || 500).json({
+        success: false,
+        message: error.response.data?.message || 'Error from AI service',
+        response: 'I\'m having trouble thinking right now. Could you ask me something else?'
+      });
+    }
+    
     return res.status(500).json({
       success: false,
-      message: 'An error occurred while processing your request'
+      message: 'An error occurred while processing your request',
+      response: 'I\'m sorry, I\'m having difficulty answering that question right now.'
     });
   }
 });

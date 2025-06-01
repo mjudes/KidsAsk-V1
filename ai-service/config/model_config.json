@@ -1,9 +1,9 @@
 {
   "model_config": {
-    "default_model": "gemma:2b",
-    "fallback_model": "llama2:7b",
-    "temperature": 0.7,
-    "max_tokens": 300,
+    "default_model": "phi:latest",
+    "fallback_model": "orca-mini:latest",
+    "temperature": 0.5,
+    "num_predict": 100,
     "top_p": 0.9,
     "frequency_penalty": 0.0,
     "presence_penalty": 0.6

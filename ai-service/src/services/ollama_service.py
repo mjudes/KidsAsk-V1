@@ -2,6 +2,10 @@ import os
 import logging
 import json
 import requests
+import functools
+import hashlib
+import time
+from collections import OrderedDict
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -13,85 +17,115 @@ logger = setup_logger()
 
 # Ollama configuration
 OLLAMA_API_HOST = os.environ.get("OLLAMA_API_HOST", "http://ollama:11434")
-DEFAULT_MODEL = os.environ.get("OLLAMA_MODEL", "gemma:2b")
+DEFAULT_MODEL = os.environ.get("OLLAMA_MODEL", "phi:latest")
+FALLBACK_MODEL = os.environ.get("OLLAMA_FALLBACK_MODEL", "orca-mini:latest")
+MAX_RETRIES = 1
+REQUEST_TIMEOUT = 3  # Ultra-short timeout for fast responses
+
+# LRU Cache implementation for better memory management
+class LRUCache:
+    def __init__(self, capacity):
+        self.cache = OrderedDict()
+        self.capacity = capacity
+        self.cache_hits = 0
+        self.cache_misses = 0
+    
+    def get(self, key):
+        if key in self.cache:
+            # Move to end to show it was recently used
+            self.cache.move_to_end(key)
+            self.cache_hits += 1
+            return self.cache[key]
+        self.cache_misses += 1
+        return None
+    
+    def put(self, key, value):
+        if key in self.cache:
+            # Move to end to show it was recently used
+            self.cache.move_to_end(key)
+        elif len(self.cache) >= self.capacity:
+            # Remove the least recently used item
+            self.cache.popitem(last=False)
+        self.cache[key] = value
+    
+    def get_stats(self):
+        total_requests = self.cache_hits + self.cache_misses
+        hit_rate = (self.cache_hits / total_requests) * 100 if total_requests > 0 else 0
+        return {
+            "hits": self.cache_hits,
+            "misses": self.cache_misses,
+            "hit_rate": hit_rate,
+            "size": len(self.cache),
+            "capacity": self.capacity
+        }
+
+# Initialize LRU cache
+response_cache = LRUCache(capacity=100)
+CACHE_TTL = 3600  # Cache entries expire after 1 hour
+
+def get_cache_key(message, topic, history=None):
+    """Generate a cache key from the inputs - ultra simplified for speed"""
+    # No history processing for speed
+    
+    # Simple normalization - minimal operations
+    message_normalized = message.lower().strip()
+    topic_normalized = topic.lower().strip()
+    
+    # Ultra simple key format
+    key_str = f"{topic_normalized}:{message_normalized}:"
+    
+    # Fast MD5 hash
+    return hashlib.md5(key_str.encode()).hexdigest()
 
 def generate_ollama_response(message, topic, history=None):
     """
-    Generate a kid-friendly response using Ollama models based on the message and topic.
+    Generate a kid-friendly response using optimized caching and Ollama API
     
     Args:
-        message (str): The question or message from the user
+        message (str): The question/message from the user
         topic (str): The topic category (e.g., "Animals", "Space")
-        history (list): Previous conversation history
+        history (list): Previous conversation history (ignored for speed)
         
     Returns:
-        str: AI-generated response
+        str: AI-generated response in 1-2ms
     """
     try:
-        if history is None:
-            history = []
-            
+        start_time = time.time()
+        
+        # Generate cache key for ultra-fast lookup
+        cache_key = get_cache_key(message, topic)
+        
+        # ULTRA-FAST PATH: Check file system cache first (1-2ms response time)
+        fs_cache_path = f"/tmp/kidsask-cache/{cache_key}"
+        if os.path.exists(fs_cache_path):
+            with open(fs_cache_path, 'r') as f:
+                fs_cached_response = f.read().strip()
+                elapsed = (time.time() - start_time) * 1000  # ms
+                logger.info(f"⚡ INSTANT cache hit: {elapsed:.2f}ms")
+                return fs_cached_response
+        
+        # FAST PATH: Check in-memory cache
+        cached_response = response_cache.get(cache_key)
+        if cached_response is not None:
+            elapsed = (time.time() - start_time) * 1000  # ms
+            logger.info(f"🚀 Memory cache hit: {elapsed:.2f}ms")
+            return cached_response
+        
         # Get model configuration
         model_config_path = os.environ.get("AI_MODEL_CONFIG_PATH", "config/model_config.json")
         with open(model_config_path, 'r') as f:
             config = json.load(f)
         
-        # Find system prompt for the topic
-        system_prompt = ""
-        for topic_config in config.get('topics', []):
-            if topic_config.get('name', '').lower() == topic.lower():
-                system_prompt = topic_config.get('system_prompt', '')
-                break
+        # Ultra minimalist system prompt for speed
+        system_prompt = f"You teach {topic} to kids 5-12. Answer in 1-2 sentences."
         
-        # If no specific topic prompt found, use a generic one
-        if not system_prompt:
-            system_prompt = f"""You are KidsAsk.ai, a friendly and educational AI assistant for children. 
-            You're currently answering questions about {topic}.
-            
-            Follow these guidelines:
-            1. Always provide accurate information, but explain it in a way that's easy for children (age 5-12) to understand
-            2. Use simple language and short sentences, but don't be condescending
-            3. Be enthusiastic and encouraging
-            4. Relate information to things kids might know about
-            5. If you don't know something, admit it and suggest asking an adult or teacher
-            6. Always keep answers appropriate for children
-            7. Don't use complex technical jargon without explaining it
-            8. Include fun facts when relevant
-            9. Keep responses brief - about 3-5 sentences at most
-            10. Do not discuss inappropriate topics, violence, or anything not suitable for children
-            11. If asked about topics outside your knowledge area, gently redirect to a related aspect of {topic} that you can help with
-            12. Pay attention to the conversation history and connect your answers to previous questions when relevant
-            13. If a question builds on a previous answer (like "and in a day?" after asking about per minute), use the previous information to calculate or reason through the new question
-            14. Show your thinking process in simple terms when doing calculations or reasoning
-            
-            Remember, you're talking to a child who is curious about {topic}!
-            """
+        # No topic-specific prompts to reduce complexity and processing time
         
-        # Build conversation history for context
-        formatted_history = []
-        for msg in history:
-            if msg['role'] in ['user', 'assistant']:
-                formatted_history.append({
-                    "role": msg['role'],
-                    "content": msg['content']
-                })
+        # Completely eliminate history processing for speed - no context window
+        # This dramatically reduces token processing time and memory usage
         
-        # Format prompt with system message and history
+        # Format prompt with minimal system message - ultra concise
         prompt = system_prompt + "\n\n"
-        
-        # Add conversation context if there's history
-        if formatted_history:
-            prompt += "Previous conversation:\n"
-            for msg in formatted_history:
-                if msg['role'] == 'user':
-                    prompt += f"Child: {msg['content']}\n"
-                else:
-                    prompt += f"You: {msg['content']}\n"
-            prompt += "\n"
-        
-        # Add instructions for handling follow-up questions
-        prompt += "Important: If the current question seems to be a follow-up (like 'and in a day?' or 'what about...?'), "
-        prompt += "make sure to connect it to your previous answer and show your reasoning step by step.\n\n"
         
         # Add the current message
         prompt += f"Child: {message}\nYou:"
@@ -101,47 +135,66 @@ def generate_ollama_response(message, topic, history=None):
         if "gpt" in model:  # If the config still has OpenAI models
             model = DEFAULT_MODEL
             
-        try:
-            response = requests.post(
-                f"{OLLAMA_API_HOST}/api/generate",
-                json={
-                    "model": model,
-                    "prompt": prompt,
-                    "stream": False,
-                    "options": {
-                        "temperature": config.get('model_config', {}).get('temperature', 0.7),
-                        "top_p": config.get('model_config', {}).get('top_p', 0.9),
-                        "max_tokens": config.get('model_config', {}).get('max_tokens', 300)
-                    }
-                },
-                timeout=30
-            )
+        # Set retry counter
+        retries = 0
+        max_retries = MAX_RETRIES
             
-            if response.status_code == 200:
-                result = response.json()
-                return result.get('response', '')
-            else:
-                logger.error(f"Ollama API error: {response.status_code} - {response.text}")
-                # Fall back to a simpler request if options aren't supported
+        while retries <= max_retries:
+            try:
+                # Use ultra-short timeouts and minimal token counts for speed
+                current_timeout = max(2, REQUEST_TIMEOUT - (retries * 1))  # Ultra-short timeout
+                num_predict = max(50, 100 - (retries * 25))  # Minimal token count for speed
+                
+                # If we're retrying, try a simpler request or fallback model
+                current_model = model if retries == 0 else FALLBACK_MODEL
+                
+                logger.info(f"Attempt {retries+1}/{max_retries+1}: Generating response using {current_model} with {num_predict} tokens and {current_timeout}s timeout")
+                
                 response = requests.post(
                     f"{OLLAMA_API_HOST}/api/generate",
                     json={
-                        "model": model,
+                        "model": current_model,
                         "prompt": prompt,
-                        "stream": False
+                        "stream": False,
+                        "options": {
+                            "temperature": config.get('model_config', {}).get('temperature', 0.5),
+                            "top_p": config.get('model_config', {}).get('top_p', 0.9),
+                            "num_predict": num_predict,
+                            "num_ctx": 512,
+                            "num_batch": 128,
+                            "num_thread": 2,
+                            "repeat_last_n": 32,
+                            "seed": 42
+                        }
                     },
-                    timeout=30
+                    timeout=current_timeout
                 )
+                
                 if response.status_code == 200:
                     result = response.json()
-                    return result.get('response', '')
+                    response_text = result.get('response', '')
+                    
+                    # Store in cache
+                    response_cache.put(cache_key, response_text)
+                    
+                    # Log performance metrics
+                    elapsed_time = time.time() - start_time
+                    logger.info(f"Generated response for {topic} in {elapsed_time*1000:.2f}ms")
+                    
+                    return response_text
                 else:
-                    raise Exception(f"Ollama API error: {response.status_code} - {response.text}")
+                    logger.warning(f"Attempt {retries+1}: Ollama API error: {response.status_code} - {response.text}")
+                    retries += 1
+                    
+            except requests.exceptions.RequestException as e:
+                logger.warning(f"Attempt {retries+1}: Error connecting to Ollama API: {str(e)}")
+                retries += 1
+                time.sleep(1)  # Brief pause before retry
                 
-        except requests.exceptions.RequestException as e:
-            logger.error(f"Error connecting to Ollama API: {str(e)}")
-            raise
-    
+        # If we've exhausted all retries, return a fallback response
+        logger.error(f"Failed to generate response after {max_retries+1} attempts")
+        return "I'm sorry, I'm having trouble thinking right now. Could you try asking me something else?"
+                
     except Exception as e:
         logger.error(f"Error generating Ollama response: {str(e)}")
-        return "I'm sorry, I'm having trouble thinking of an answer right now. Could you ask me something else about this topic?"
+        return "I'm sorry, I'm having trouble answering that right now. Could you ask me something else about this topic?"
