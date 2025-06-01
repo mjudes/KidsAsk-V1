@@ -1,11 +1,23 @@
 import os
 import logging
+import sys
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
+<<<<<<< HEAD
 from services.ai_service import generate_response
 from utils.content_filter import filter_inappropriate_content
 from utils.topic_validator import validate_topic
 from utils.logger_config import setup_logger
+=======
+
+# Add the current directory to Python path to fix import issues
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from src.services.ollama_service import generate_ollama_response
+from src.utils.content_filter import filter_inappropriate_content
+from src.utils.topic_validator import validate_topic
+from src.utils.logger_config import setup_logger
+>>>>>>> ai-branch-new-container
 
 # Load environment variables
 load_dotenv()
@@ -61,7 +73,7 @@ def generate():
             })
         
         # Generate response
-        response = generate_response(message, topic, history)
+        response = generate_ollama_response(message, topic, history)
         
         return jsonify({
             "response": response
