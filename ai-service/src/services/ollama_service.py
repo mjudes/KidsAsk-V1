@@ -60,6 +60,9 @@ def generate_ollama_response(message, topic, history=None):
             9. Keep responses brief - about 3-5 sentences at most
             10. Do not discuss inappropriate topics, violence, or anything not suitable for children
             11. If asked about topics outside your knowledge area, gently redirect to a related aspect of {topic} that you can help with
+            12. Pay attention to the conversation history and connect your answers to previous questions when relevant
+            13. If a question builds on a previous answer (like "and in a day?" after asking about per minute), use the previous information to calculate or reason through the new question
+            14. Show your thinking process in simple terms when doing calculations or reasoning
             
             Remember, you're talking to a child who is curious about {topic}!
             """
@@ -76,15 +79,22 @@ def generate_ollama_response(message, topic, history=None):
         # Format prompt with system message and history
         prompt = system_prompt + "\n\n"
         
-        # Add conversation history
-        for msg in formatted_history:
-            if msg['role'] == 'user':
-                prompt += f"User: {msg['content']}\n"
-            else:
-                prompt += f"Assistant: {msg['content']}\n"
+        # Add conversation context if there's history
+        if formatted_history:
+            prompt += "Previous conversation:\n"
+            for msg in formatted_history:
+                if msg['role'] == 'user':
+                    prompt += f"Child: {msg['content']}\n"
+                else:
+                    prompt += f"You: {msg['content']}\n"
+            prompt += "\n"
+        
+        # Add instructions for handling follow-up questions
+        prompt += "Important: If the current question seems to be a follow-up (like 'and in a day?' or 'what about...?'), "
+        prompt += "make sure to connect it to your previous answer and show your reasoning step by step.\n\n"
         
         # Add the current message
-        prompt += f"User: {message}\nAssistant:"
+        prompt += f"Child: {message}\nYou:"
         
         # Call Ollama API
         model = config.get('model_config', {}).get('default_model', DEFAULT_MODEL)
