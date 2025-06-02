@@ -12,8 +12,8 @@ cd /Users/meronj/meron-dev-projects/KidsAsk-V1
 docker-compose -f docker-compose.yml up -d
 
 # Wait for Ollama to be available
-echo "Waiting for Ollama service to be ready..."
-sleep 10
+#echo "Waiting for Ollama service to be ready..."
+#sleep 10
 
 # Run the advanced model optimization script
 #echo "Running advanced model optimization for better performance..."

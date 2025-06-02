@@ -11,7 +11,8 @@ RUN apt-get update && apt-get install -y \
 # Copy requirements file and install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install openai gunicorn
+# Ensure we have the correct version of openai installed
+RUN pip install openai==0.28.0 gunicorn
 
 # Copy the rest of the application
 COPY . .

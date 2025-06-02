@@ -69,9 +69,12 @@ def generate_response(message, topic, history=None):
         # Combine system message, conversation history, and new user message
         messages = [system_message] + formatted_history + [user_message]
         
-        # Call OpenAI API
-        response = openai.chat.completions.create(
-            model="gpt-3.5-turbo",  # or use gpt-4 for better responses
+        # Get model from environment or use default
+        model = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
+        
+        # Call OpenAI API using v0.28.0 format
+        response = openai.ChatCompletion.create(
+            model=model,
             messages=messages,
             max_tokens=300,
             temperature=0.7,
@@ -80,8 +83,8 @@ def generate_response(message, topic, history=None):
             presence_penalty=0.6
         )
         
-        # Extract and return the assistant's message
-        return response.choices[0].message.content
+        # Extract and return the assistant's message (v0.28.0 format)
+        return response.choices[0].message["content"]
     
     except Exception as e:
         logger.error(f"Error generating AI response: {str(e)}")

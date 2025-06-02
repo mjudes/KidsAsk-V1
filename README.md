@@ -34,7 +34,7 @@ KidsAsk.ai focuses on the following educational topics:
 
 - **Frontend**: Next.js, React, TailwindCSS
 - **API Gateway**: Node.js, Express
-- **AI Service**: Python, Flask, OpenAI
+- **AI Service**: Python, Flask, OpenAI GPT-4o Mini
 - **Database**: MongoDB
 - **Infrastructure**: Docker, Docker Compose
 
@@ -53,9 +53,12 @@ KidsAsk.ai focuses on the following educational topics:
    cd kidsask-ai
    ```
 
-2. Set up environment variables
-   - Copy the `.env.example` files in each service directory to `.env`
-   - Update the OpenAI API key in `ai-service/.env`
+2. Set up OpenAI integration
+   ```bash
+   ./setup-openai.sh
+   ```
+   - This script will create a `.env` file with your OpenAI API key
+   - You'll need an API key with access to the GPT-4o Mini model
 
 3. Build and start the containers
    ```bash

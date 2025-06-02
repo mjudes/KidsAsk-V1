@@ -9,7 +9,7 @@ import threading
 # Add the current directory to Python path to fix import issues
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.services.ollama_service import generate_ollama_response, response_cache
+from src.services.ai_service import generate_response as generate_openai_response
 from src.utils.content_filter import filter_inappropriate_content
 from src.utils.topic_validator import validate_topic
 from src.utils.logger_config import setup_logger
@@ -27,7 +27,7 @@ app = Flask(__name__)
 def preload_model():
     try:
         # Simple preload question to warm up the model
-        generate_ollama_response("What is the sky blue?", "Everyday Why Questions")
+        generate_openai_response("What is the sky blue?", "Everyday Why Questions")
         logger.info("Model preloaded successfully")
     except Exception as e:
         logger.error(f"Error preloading model: {str(e)}")
@@ -38,16 +38,10 @@ threading.Thread(target=preload_model).start()
 @app.route('/health', methods=['GET'])
 def health_check():
     """Health check endpoint with performance metrics"""
-    # Get cache stats if available
-    cache_stats = {}
-    if hasattr(response_cache, 'get_stats'):
-        cache_stats = response_cache.get_stats()
-    
     return jsonify({
         "status": "ok",
         "timestamp": time.time(),
-        "cache_stats": cache_stats,
-        "model": os.environ.get("OLLAMA_MODEL", "gemma:2b")
+        "model": os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
     })
 
 @app.route('/generate', methods=['POST'])
@@ -100,7 +94,7 @@ def generate():
             })
         
         # Generate response
-        response = generate_ollama_response(message, topic, history)
+        response = generate_openai_response(message, topic, history)
         
         # Log timing information
         elapsed_time = time.time() - start_time

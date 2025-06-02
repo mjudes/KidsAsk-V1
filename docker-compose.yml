@@ -35,7 +35,7 @@ services:
     networks:
       - kidsask-network
 
-  # AI Service for processing questions
+  # AI Service for processing questions with OpenAI
   ai-service:
     build: ./ai-service
     ports:
@@ -44,28 +44,8 @@ services:
       - ./ai-service:/app
     environment:
       - AI_MODEL_CONFIG_PATH=/app/config/model_config.json
-      - OLLAMA_API_HOST=http://ollama:11434
-      - OLLAMA_MODEL=gemma:2b
-    depends_on:
-      - ollama
-    networks:
-      - kidsask-network
-      
-  # Ollama Service for AI models
-  ollama:
-    image: ollama/ollama:latest
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama_data:/root/.ollama
-    deploy:
-      resources:
-        limits:
-          cpus: '2'
-          memory: 4G
-    environment:
-      - OLLAMA_MODELS=/root/.ollama/models
-      - OLLAMA_NUM_THREADS=2
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=gpt-4o-mini
     networks:
       - kidsask-network
 
@@ -85,4 +65,3 @@ networks:
 
 volumes:
   mongodb_data:
-  ollama_data:
