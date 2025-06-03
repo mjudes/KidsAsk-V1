@@ -37,7 +37,7 @@ router.post('/', validateChatRequest, async (req, res) => {
       9: 'Mythical Creatures and Magic',
       10: 'Everyday Why Questions',
       11: 'Math',
-      12: 'Lego'
+      12: 'Gaming'
     };
 
     // Get the current topic name

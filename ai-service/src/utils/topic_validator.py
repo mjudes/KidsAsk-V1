@@ -24,7 +24,7 @@ def validate_topic(topic):
         "Mythical Creatures and Magic",
         "Everyday Why Questions",
         "Math",
-        "Lego"
+        "Gaming"
     ]
     
     # Case-insensitive matching

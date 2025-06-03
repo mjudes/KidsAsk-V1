@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
       { id: 9, name: 'Mythical Creatures and Magic', icon: '🧙‍♂️' },
       { id: 10, name: 'Everyday Why Questions', icon: '❓' },
       { id: 11, name: 'Math', icon: '🧮' },
-      { id: 12, name: 'Lego', icon: '🧱' },
+      { id: 12, name: 'Gaming', icon: '🎮' },
     ];
     
     res.json({
@@ -56,7 +56,7 @@ router.get('/:id', async (req, res) => {
       { id: 9, name: 'Mythical Creatures and Magic', icon: '🧙‍♂️' },
       { id: 10, name: 'Everyday Why Questions', icon: '❓' },
       { id: 11, name: 'Math', icon: '🧮' },
-      { id: 12, name: 'Lego', icon: '🧱' },
+      { id: 12, name: 'Gaming', icon: '🎮' },
     ];
     
     const topic = topics.find(t => t.id === topicId);

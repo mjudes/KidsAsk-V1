@@ -28,7 +28,7 @@ KidsAsk.ai focuses on the following educational topics:
 9. Mythical Creatures and Magic
 10. Everyday Why Questions
 11. Math
-12. Lego
+12. Gaming
 
 ## Tech Stack
 

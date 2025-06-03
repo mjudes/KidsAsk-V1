@@ -81,7 +81,7 @@ def generate():
             logger.warning(f"Invalid topic requested: {topic}")
             return jsonify({
                 "error": "Invalid topic",
-                "response": "I can only answer questions about Animals, Space and Planets, The Human Body, Dinosaurs, Weather, Sports, Technology and Robots, The Ocean, Mythical Creatures and Magic, Everyday Why Questions, Math, and Lego."
+                "response": "I can only answer questions about Animals, Space and Planets, The Human Body, Dinosaurs, Weather, Sports, Technology and Robots, The Ocean, Mythical Creatures and Magic, Everyday Why Questions, Math, and Gaming."
             }), 400
         
         # Check for inappropriate content

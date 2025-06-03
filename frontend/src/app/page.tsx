@@ -21,7 +21,7 @@ const topics: Topic[] = [
   { id: 9, name: 'Mythical Creatures and Magic', icon: '🧙‍♂️' },
   { id: 10, name: 'Everyday Why Questions', icon: '❓' },
   { id: 11, name: 'Math', icon: '🧮' },
-  { id: 12, name: 'Lego', icon: '🧱' },
+  { id: 12, name: 'Gaming', icon: '🎮' },
 ];
 
 export default function Home() {

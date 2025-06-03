@@ -36,8 +36,8 @@ export default function TopicSelector({ topics, onSelectTopic }: TopicSelectorPr
         return '❓';
       case 'Math':
         return '🔢';
-      case 'Lego':
-        return '🧱';
+      case 'Gaming':
+        return '🎮';
       default:
         return defaultIcon;
     }
@@ -68,8 +68,8 @@ export default function TopicSelector({ topics, onSelectTopic }: TopicSelectorPr
         return 'Get answers to common questions about daily life';
       case 'Math':
         return 'Explore numbers, shapes, and fun math puzzles';
-      case 'Lego':
-        return 'Creative building and amazing Lego facts';
+      case 'Gaming':
+        return 'Learn about popular video games, tips, and gaming facts';
       default:
         return 'Explore this interesting topic!';
     }
