@@ -73,7 +73,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const response = await fetch(`${API_BASE_URL}/api/users/me`, {
         method: 'GET',
         headers,
-        credentials: 'include', // Include cookies for authentication
+        // Include credentials for cross-origin requests
+        credentials: 'include',
       });
 
       if (response.ok) {

@@ -16,7 +16,15 @@ const PORT = process.env.PORT || 4000;
 
 // Middleware
 app.use(helmet()); // Security headers
-app.use(cors()); // Enable CORS
+
+// Configure CORS with specific options
+app.use(cors({
+  origin: ['http://localhost:3050', 'http://frontend:3000'], // Allow both local and Docker hostnames
+  credentials: true, // Allow credentials (cookies, authorization headers)
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json()); // Parse JSON bodies
 app.use(morgan('dev')); // HTTP request logging
 

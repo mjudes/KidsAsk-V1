@@ -1,8 +1,8 @@
 // Config for different environments
 const config = {
   development: {
-    apiUrl: 'http://localhost:4000',
-    aiServiceUrl: 'http://localhost:5050',
+    apiUrl: process.env.NEXT_PUBLIC_RUNTIME_ENV === 'docker' ? 'http://api:4000' : 'http://localhost:4000',
+    aiServiceUrl: process.env.NEXT_PUBLIC_RUNTIME_ENV === 'docker' ? 'http://ai-service:5050' : 'http://localhost:5050',
   },
   production: {
     apiUrl: process.env.NEXT_PUBLIC_API_URL || 'https://api.kidsask.ai',
