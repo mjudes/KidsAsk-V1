@@ -124,7 +124,7 @@ export default function TopicsPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col">
       <div className="absolute top-4 right-4 flex space-x-2">
         {!userName ? (
           <button 
@@ -165,8 +165,8 @@ export default function TopicsPage() {
       
       <main className="flex-grow container mx-auto px-4 py-8 mt-6">
         <div className="text-center mb-8 fade-in">
-          <h1 className="text-4xl font-bold text-gradient mb-3">What Would You Like to Learn? 🌟</h1>
-          <p className="text-lg text-gray-700 max-w-3xl mx-auto">
+          <h1 className="text-4xl font-bold text-white mb-3">What Would You Like to Learn? 🌟</h1>
+          <p className="text-lg text-white max-w-3xl mx-auto">
             Choose a topic and start your amazing learning adventure! Every question brings
             you closer to becoming a knowledge superhero! 🚀
           </p>

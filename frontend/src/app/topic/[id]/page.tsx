@@ -161,7 +161,7 @@ export default function TopicDetailPage({ params }: { params: { id: string } }) 
   }
   
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-500 to-teal-600">
+    <div className="min-h-screen flex flex-col">
       {/* Simple header with back button and topic name */}
       <div className="bg-white bg-opacity-10 shadow-sm">
         <div className="container mx-auto px-4 py-3">
