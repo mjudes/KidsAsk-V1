@@ -16,10 +16,64 @@ export default function TopicDetailPage({ params }: { params: { id: string } }) 
   const [error, setError] = useState<string | null>(null);
   const [remainingQuestions, setRemainingQuestions] = useState<number | null>(null);
   const [isFreeTrial, setIsFreeTrial] = useState(false);
+  const [userName, setUserName] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
   
   const topicId = parseInt(params.id);
   
+  // Function to handle logout
+  const handleLogout = async () => {
+    try {
+      // Import the API utility at runtime
+      const { logoutUser } = await import('../../../utils/authApi');
+      await logoutUser();
+      
+      // Redirect to home
+      router.push('/');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+  
   useEffect(() => {
+    // Fetch user data to know if user is logged in
+    const fetchUserData = async () => {
+      try {
+        // Import the API utility at runtime
+        const { getCurrentUser } = await import('../../../utils/authApi');
+        const response = await getCurrentUser();
+        
+        if (response.success) {
+          setUserName(response.data.user.fullName.split(' ')[0]); // Use first name only
+          setIsAuthenticated(true);
+        } else {
+          // User is not authenticated, redirect to home page
+          setIsAuthenticated(false);
+          router.push('/?authRequired=true');
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        // Authentication failed, redirect to home page
+        setIsAuthenticated(false);
+        router.push('/?authRequired=true');
+      } finally {
+        setAuthChecked(true);
+      }
+    };
+
+    // Check if user has auth token in cookie
+    const hasAuthToken = document.cookie.includes('auth_token=');
+    if (hasAuthToken) {
+      fetchUserData();
+    } else {
+      // No auth token, redirect immediately
+      setIsAuthenticated(false);
+      setAuthChecked(true); // Mark auth check as complete
+      router.push('/?authRequired=true');
+      return;
+    }
+    
     async function fetchTopicDetails() {
       try {
         // Check if topicId is valid
@@ -71,7 +125,10 @@ export default function TopicDetailPage({ params }: { params: { id: string } }) 
       }
     }
     
-    fetchTopicDetails();
+    // Only fetch topic details if authenticated
+    if (isAuthenticated || hasAuthToken) {
+      fetchTopicDetails();
+    }
   }, [topicId]);
   
   const handleSendMessage = async (message: string) => {
@@ -130,16 +187,24 @@ export default function TopicDetailPage({ params }: { params: { id: string } }) 
     router.push('/topics');
   };
   
-  if (isLoading) {
+  // If we haven't checked auth status yet or we're still loading topic data, show loading state
+  if (!authChecked || isLoading) {
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
-        <div className="flex-grow flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="flex-grow flex flex-col items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+          <p className="text-white text-lg">Loading topic...</p>
+          {!authChecked && <p className="text-white text-sm mt-2">Checking authentication...</p>}
         </div>
         <Footer />
       </div>
     );
+  }
+  
+  // If user is not authenticated, redirect happens in useEffect, but we'll return null to avoid flashing content
+  if (!isAuthenticated) {
+    return null;
   }
   
   if (error || !topic) {
@@ -162,6 +227,39 @@ export default function TopicDetailPage({ params }: { params: { id: string } }) 
   
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Add absolute positioned logout button */}
+      <div className="absolute top-4 right-4 flex space-x-2">
+        {!userName ? (
+          <button 
+            onClick={() => router.push('/login')}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full transition shadow-lg"
+          >
+            Log In
+          </button>
+        ) : (
+          <>
+            <button 
+              onClick={() => router.push('/dashboard')}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full transition shadow-lg flex items-center"
+            >
+              <span>Dashboard</span>
+              <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+              </svg>
+            </button>
+            <button 
+              onClick={handleLogout}
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full transition shadow-lg flex items-center"
+            >
+              <span>Logout</span>
+              <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </button>
+          </>
+        )}
+      </div>
+      
       {/* Simple header with back button and topic name */}
       <div className="bg-white bg-opacity-10 shadow-sm">
         <div className="container mx-auto px-4 py-3">

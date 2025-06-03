@@ -15,6 +15,8 @@ export default function TopicsPage() {
   const [remainingQuestions, setRemainingQuestions] = useState<number | null>(null);
   const [isFreeTrial, setIsFreeTrial] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
   
   const fetchUserData = async () => {
     try {
@@ -24,13 +26,33 @@ export default function TopicsPage() {
       
       if (response.success) {
         setUserName(response.data.user.fullName.split(' ')[0]); // Use first name only
+        setIsAuthenticated(true);
+      } else {
+        // User is not authenticated, redirect to home page
+        setIsAuthenticated(false);
+        router.push('/?authRequired=true');
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
+      // Authentication failed, redirect to home page
+      setIsAuthenticated(false);
+      router.push('/?authRequired=true');
+    } finally {
+      setAuthChecked(true);
     }
   };
   
   useEffect(() => {
+    // Immediately check authentication status when the component mounts
+    const hasAuthToken = document.cookie.includes('auth_token=');
+    if (hasAuthToken) {
+      fetchUserData();
+    } else {
+      // No auth token, redirect to home page with auth required flag
+      router.push('/?authRequired=true');
+      return;
+    }
+    
     async function fetchTopics() {
       try {
         const { getTopics } = await import('../../utils/api');
@@ -49,12 +71,6 @@ export default function TopicsPage() {
       }
     }
     
-    // Check if user is logged in and fetch their name
-    const hasAuthToken = document.cookie.includes('auth_token=');
-    if (hasAuthToken) {
-      fetchUserData();
-    }
-    
     fetchTopics();
     
     // Check for free trial status
@@ -70,8 +86,6 @@ export default function TopicsPage() {
         console.error('Error parsing free trial data:', e);
       }
     }
-    
-    fetchTopics();
   }, []);
   
   const handleSelectTopic = (topicId: number) => {
@@ -82,8 +96,10 @@ export default function TopicsPage() {
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
-        <div className="flex-grow flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="flex-grow flex flex-col items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+          <p className="text-white text-lg">Loading topics...</p>
+          {!authChecked && <p className="text-white text-sm mt-2">Checking authentication...</p>}
         </div>
         <Footer />
       </div>
@@ -115,8 +131,7 @@ export default function TopicsPage() {
       const { logoutUser } = await import('../../utils/authApi');
       await logoutUser();
       
-      // Remove cookie and redirect to home
-      document.cookie = 'auth_token=; path=/; max-age=0; SameSite=Strict';
+      // Redirect to home
       router.push('/');
     } catch (error) {
       console.error('Error logging out:', error);

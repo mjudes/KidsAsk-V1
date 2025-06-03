@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import TopicSelector from '../components/TopicSelector';
 import ChatBox from '../components/ChatBox';
@@ -29,17 +29,24 @@ export default function Home() {
   const [selectedTopic, setSelectedTopic] = useState<number | null>(null);
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [authRequired, setAuthRequired] = useState(false);
+  
+  // Check URL parameters for authentication required flag
+  useEffect(() => {
+    // Check if URL has authRequired parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('authRequired') === 'true') {
+      setAuthRequired(true);
+      
+      // Clear the parameter from URL without page refresh
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+    }
+  }, []);
 
   const handleTopicSelect = (topicId: number) => {
-    setSelectedTopic(topicId);
-    // Start with a welcome message for the selected topic
-    const topic = topics.find(t => t.id === topicId);
-    setChatHistory([
-      { 
-        role: 'assistant', 
-        content: `Hi there! I'm ready to talk about ${topic?.name}! What would you like to know?` 
-      }
-    ]);
+    // Redirect to the topics page where authentication will be checked
+    router.push(`/topics`);
   };
 
   const handleSendMessage = async (message: string) => {
@@ -81,6 +88,38 @@ export default function Home() {
           Log In
         </button>
       </div>
+      
+      {/* Auth required notification */}
+      {authRequired && (
+        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4 container mx-auto mt-4">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm">
+                <strong>Authentication Required:</strong> Please log in or register to access the topic pages and chat with KidsAsk AI.
+              </p>
+              <div className="mt-2 flex space-x-3">
+                <button 
+                  onClick={() => router.push('/login')}
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs transition"
+                >
+                  Log In
+                </button>
+                <button 
+                  onClick={() => router.push('/register')}
+                  className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs transition"
+                >
+                  Register
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       
       {!selectedTopic ? (
         <>

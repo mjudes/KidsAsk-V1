@@ -96,6 +96,9 @@ export const logoutUser = async () => {
       },
     });
     
+    // Also clear the auth token cookie on the client side
+    document.cookie = 'auth_token=; path=/; max-age=0; SameSite=Strict';
+    
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Logout failed');
@@ -104,6 +107,8 @@ export const logoutUser = async () => {
     return await response.json();
   } catch (error) {
     console.error('Error logging out:', error);
+    // Ensure cookie is cleared even if API call fails
+    document.cookie = 'auth_token=; path=/; max-age=0; SameSite=Strict';
     throw error;
   }
 };
