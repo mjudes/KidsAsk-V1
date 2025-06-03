@@ -337,7 +337,7 @@ export default function PaymentDetails({ initialData, onSubmit, onBack }: Paymen
                 Processing...
               </>
             ) : (
-              'Complete Registration'
+              'Complete Payment'
             )}
           </button>
         </div>

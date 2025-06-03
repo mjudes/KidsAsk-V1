@@ -4,14 +4,13 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import SubscriptionAlert from '../../components/SubscriptionAlert';
+import { useAuth } from '../../utils/AuthContext';
 import { Topic } from '../../types';
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [isFreeTrial, setIsFreeTrial] = useState(false);
-  const [remainingQuestions, setRemainingQuestions] = useState<number | null>(null);
+  const { user, isAuthenticated, isLoading } = useAuth();
   
   // Define popular topics
   const popularTopics: Topic[] = [
@@ -21,59 +20,14 @@ export default function DashboardPage() {
     { id: 4, name: 'Dinosaurs', icon: '🦖' }
   ];
   
-  // Fetch user data on component mount
+  // Redirect to login if not authenticated
   useEffect(() => {
-    async function fetchUserData() {
-      try {
-        const { getCurrentUser } = await import('../../utils/authApi');
-        const response = await getCurrentUser();
-        
-        if (response.success) {
-          setUser(response.data.user);
-        } else {
-          // Redirect to login if not authenticated
-          router.push('/login');
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-        // Redirect to login if error occurs
-        router.push('/login');
-      } finally {
-        setLoading(false);
-      }
+    if (!isLoading && !isAuthenticated) {
+      router.push('/login');
     }
-    
-    // Check for free trial status
-    const freeTrialData = localStorage.getItem('kidsask_free_trial');
-    if (freeTrialData) {
-      try {
-        const parsedData = JSON.parse(freeTrialData);
-        if (parsedData.isFreeTrialUser) {
-          setIsFreeTrial(true);
-          setRemainingQuestions(parsedData.questionsRemaining || 0);
-        }
-      } catch (e) {
-        console.error('Error parsing free trial data:', e);
-      }
-    }
-    
-    // For now, use placeholder data
-    setUser({
-      fullName: 'John Doe',
-      email: 'john@example.com',
-      subscription: {
-        plan: 'basic',
-        status: 'active',
-        endDate: new Date('2025-06-22')
-      }
-    });
-    setLoading(false);
-    
-    // Uncomment to fetch real user data
-    // fetchUserData();
-  }, [router]);
+  }, [isLoading, isAuthenticated, router]);
   
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -91,40 +45,29 @@ export default function DashboardPage() {
             Welcome, {user?.fullName}!
           </h1>
           
-          {isFreeTrial && (
-            <div className="bg-yellow-100 border border-yellow-300 rounded-lg p-4 mb-4">
-              <p className="font-medium text-yellow-800">
-                Free Trial: <span className="font-bold">{remainingQuestions}</span> questions remaining
-              </p>
-              {remainingQuestions === 0 && (
-                <div className="mt-2">
-                  <p className="text-sm text-yellow-800 mb-2">Your free trial has ended. Upgrade to continue learning!</p>
-                  <button 
-                    onClick={() => router.push('/register')}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-lg text-sm transition"
-                  >
-                    Upgrade Now
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
+          {/* Use the SubscriptionAlert component to show subscription status */}
+          <SubscriptionAlert user={user} className="mb-4" />
           
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium text-blue-800">
-                  Current Plan: <span className="font-bold capitalize">{user?.subscription?.plan}</span>
+                  Current Plan: <span className="font-bold capitalize">{user?.subscription?.plan || 'Free Trial'}</span>
                 </p>
                 <p className="text-sm text-blue-700">
-                  Status: <span className="capitalize">{user?.subscription?.status}</span>
+                  Status: <span className="capitalize">{user?.subscription?.status || 'Active'}</span>
                 </p>
-                <p className="text-sm text-blue-700">
-                  Renewal Date: {new Date(user?.subscription?.endDate).toLocaleDateString()}
-                </p>
+                {user?.subscription?.endDate && (
+                  <p className="text-sm text-blue-700">
+                    Renewal Date: {new Date(user?.subscription?.endDate).toLocaleDateString()}
+                  </p>
+                )}
               </div>
               
-              <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition">
+              <button 
+                onClick={() => router.push('/upgrade')}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition"
+              >
                 Manage Subscription
               </button>
             </div>
@@ -211,11 +154,16 @@ export default function DashboardPage() {
               <div className="space-y-3">
                 <div>
                   <div className="flex justify-between text-sm mb-1">
-                    <span>Questions Asked</span>
-                    <span className="font-medium">12</span>
+                    <span>Questions Remaining</span>
+                    <span className="font-medium">{user?.subscription?.questionsRemaining || 0}</span>
                   </div>
                   <div className="h-2 bg-gray-200 rounded-full">
-                    <div className="h-2 bg-blue-500 rounded-full" style={{ width: '12%' }}></div>
+                    <div 
+                      className="h-2 bg-blue-500 rounded-full" 
+                      style={{ 
+                        width: `${Math.min(100, ((user?.subscription?.questionsRemaining || 0) / 100) * 100)}%` 
+                      }}
+                    ></div>
                   </div>
                 </div>
                 

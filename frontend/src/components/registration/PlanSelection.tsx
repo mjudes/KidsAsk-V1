@@ -8,6 +8,7 @@ interface PlanSelectionProps {
   };
   onSubmit: (data: any) => void;
   onBack: () => void;
+  isUpgrade?: boolean;
 }
 
 interface PlanOption {
@@ -19,7 +20,7 @@ interface PlanOption {
   recommended?: boolean;
 }
 
-export default function PlanSelection({ initialData, onSubmit, onBack }: PlanSelectionProps) {
+export default function PlanSelection({ initialData, onSubmit, onBack, isUpgrade = false }: PlanSelectionProps) {
   const [selectedPlan, setSelectedPlan] = useState(initialData.plan);
   const [error, setError] = useState('');
 
@@ -86,13 +87,16 @@ export default function PlanSelection({ initialData, onSubmit, onBack }: PlanSel
     onSubmit({ plan: selectedPlan });
   };
 
+  // Filter out the free trial option when upgrading
+  const displayPlans = isUpgrade ? plans.filter(plan => plan.id !== 'freeTrial') : plans;
+  
   return (
     <div>
       <h2 className="text-xl font-semibold text-gray-800 mb-4">Choose Your Plan</h2>
       
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {plans.map(plan => (
+          {displayPlans.map(plan => (
             <div 
               key={plan.id}
               className={`border rounded-lg p-3 pt-4 cursor-pointer transition-all relative ${
@@ -159,14 +163,14 @@ export default function PlanSelection({ initialData, onSubmit, onBack }: PlanSel
             onClick={onBack}
             className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition duration-200"
           >
-            Back
+            {isUpgrade ? 'Cancel' : 'Back'}
           </button>
           
           <button
             type="submit"
             className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition duration-200"
           >
-            Continue
+            {isUpgrade ? 'Upgrade Now' : 'Continue'}
           </button>
         </div>
       </form>

@@ -180,7 +180,7 @@ export default function TopicsPage() {
                 <div className="mt-2">
                   <p className="text-sm text-yellow-800 mb-2">Your free trial has ended. Upgrade to continue learning!</p>
                   <button 
-                    onClick={() => router.push('/register')}
+                    onClick={() => router.push('/upgrade')}
                     className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-lg text-sm transition"
                   >
                     Upgrade Now

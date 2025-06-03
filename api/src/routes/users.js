@@ -4,6 +4,7 @@ const { registerUser, authenticateUser, User } = require('../models/user');
 const jwt = require('jsonwebtoken');
 const logger = require('../config/logger');
 const { validateRegistration, validateLogin, validatePasswordReset } = require('../middleware/validators');
+const { authenticateRequired, authenticateOptional } = require('../middleware/auth');
 
 // JWT Secret
 const JWT_SECRET = process.env.JWT_SECRET || 'kidsask-secret-key';
@@ -107,22 +108,37 @@ router.post('/login', validateLogin, async (req, res) => {
  * @route GET /api/users/me
  * @access Private
  */
-router.get('/me', async (req, res) => {
+router.get('/me', authenticateRequired, async (req, res) => {
   try {
-    // For now, return a placeholder
-    // This will be replaced with actual authentication middleware
-    res.json({ 
+    // User ID is already verified and added to req by the middleware
+    const userId = req.userId;
+    
+    // Try to find the user
+    const user = await User.findById(userId).select('-password -passwordResetToken -passwordResetExpires');
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+    
+    // Return the actual user data
+    res.json({
       success: true,
-      message: 'User profile endpoint - to be implemented',
+      message: 'User profile retrieved successfully',
       data: {
         user: {
-          id: 1,
-          fullName: 'Test User',
-          email: 'test@example.com',
-          role: 'user',
+          id: user._id,
+          fullName: user.fullName,
+          email: user.email,
+          role: user.role,
           subscription: {
-            plan: 'basic',
-            status: 'active'
+            plan: user.subscription.plan,
+            status: user.subscription.status,
+            questionsRemaining: user.subscription.questionsRemaining,
+            isFreeTrialUser: user.subscription.isFreeTrialUser,
+            endDate: user.subscription.endDate
           }
         }
       }
@@ -304,6 +320,161 @@ router.post('/reset-password/:token', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error resetting password'
+    });
+  }
+});
+
+/**
+ * Upgrade a user's plan
+ * @route PUT /api/users/upgrade-plan
+ * @access Private
+ */
+router.put('/upgrade-plan', authenticateOptional, async (req, res) => {
+  try {
+    // Use userId from auth middleware if available, otherwise from request body
+    let userId = req.userId || req.body.userId;
+    const { plan } = req.body;
+    
+    // Validate request
+    if (!userId || !plan) {
+      return res.status(400).json({
+        success: false,
+        message: 'User ID and plan are required'
+      });
+    }
+    
+    // Validate plan type
+    const validPlans = ['basic', 'standard', 'premium'];
+    if (!validPlans.includes(plan)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid plan type'
+      });
+    }
+    
+    // Find user by ID
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+    
+    // Update user's subscription plan
+    user.subscription.plan = plan;
+    user.subscription.questionsRemaining = plan === 'basic' ? 50 : plan === 'standard' ? 200 : 500;
+    user.subscription.isFreeTrialUser = false;
+    user.subscription.startDate = new Date();
+    // Set end date to 30 days from now for basic, 90 days for standard, 365 days for premium
+    const daysToAdd = plan === 'basic' ? 30 : plan === 'standard' ? 90 : 365;
+    user.subscription.endDate = new Date();
+    user.subscription.endDate.setDate(user.subscription.endDate.getDate() + daysToAdd);
+    user.subscription.status = 'active';
+    user.updatedAt = new Date();
+    
+    await user.save();
+    
+    res.json({
+      success: true,
+      message: 'Plan upgraded successfully',
+      data: {
+        plan: user.subscription.plan,
+        questionsRemaining: user.subscription.questionsRemaining,
+        endDate: user.subscription.endDate
+      }
+    });
+  } catch (error) {
+    logger.error('Error upgrading user plan:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while upgrading plan'
+    });
+  }
+});
+
+/**
+ * Process payment and upgrade plan
+ * @route POST /api/users/process-payment
+ * @access Private
+ */
+router.post('/process-payment', authenticateOptional, async (req, res) => {
+  try {
+    // Use userId from auth middleware if available, otherwise from request body
+    let userId = req.userId || req.body.userId;
+    const { plan, paymentDetails } = req.body;
+    
+    // Validate request
+    if (!userId || !plan || !paymentDetails) {
+      return res.status(400).json({
+        success: false,
+        message: 'User ID, plan, and payment details are required'
+      });
+    }
+    
+    // Validate plan type
+    const validPlans = ['basic', 'standard', 'premium'];
+    if (!validPlans.includes(plan)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid plan type'
+      });
+    }
+    
+    // Validate payment details
+    if (!paymentDetails.cardNumber || !paymentDetails.cardExpiry || !paymentDetails.cardCvv) {
+      return res.status(400).json({
+        success: false,
+        message: 'Card number, expiry date, and CVV are required'
+      });
+    }
+    
+    // Find user by ID
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+    
+    // In a real application, you would process payment using a payment gateway like Stripe
+    // For demonstration purposes, we'll simulate a successful payment
+    
+    // Update user's subscription plan
+    user.subscription.plan = plan;
+    user.subscription.questionsRemaining = plan === 'basic' ? 50 : plan === 'standard' ? 200 : 500;
+    user.subscription.isFreeTrialUser = false;
+    user.subscription.startDate = new Date();
+    // Set end date to 30 days from now for basic, 90 days for standard, 365 days for premium
+    const daysToAdd = plan === 'basic' ? 30 : plan === 'standard' ? 90 : 365;
+    user.subscription.endDate = new Date();
+    user.subscription.endDate.setDate(user.subscription.endDate.getDate() + daysToAdd);
+    user.subscription.status = 'active';
+    user.updatedAt = new Date();
+    
+    // Save the last 4 digits of card for reference (don't store full card numbers!)
+    user.subscription.paymentMethod = 'credit';
+    user.subscription.lastFourDigits = paymentDetails.cardNumber.slice(-4);
+    
+    await user.save();
+    
+    res.json({
+      success: true,
+      message: 'Payment processed and plan upgraded successfully',
+      data: {
+        plan: user.subscription.plan,
+        questionsRemaining: user.subscription.questionsRemaining,
+        endDate: user.subscription.endDate
+      }
+    });
+  } catch (error) {
+    logger.error('Error processing payment:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while processing payment'
     });
   }
 });

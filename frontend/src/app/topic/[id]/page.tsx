@@ -195,7 +195,7 @@ export default function TopicDetailPage({ params }: { params: { id: string } }) 
                   <span className="block mt-1">
                     Your free trial has ended. 
                     <button 
-                      onClick={() => router.push('/register')}
+                      onClick={() => router.push('/upgrade')}
                       className="ml-2 bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs transition"
                     >
                       Upgrade Now
