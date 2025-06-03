@@ -196,38 +196,14 @@ export default function TopicsPage() {
         </div>
       </main>
       
-      <footer className="bg-white bg-opacity-10 backdrop-blur-sm text-white py-4 mt-auto">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="mb-4 md:mb-0">
-              <h2 className="text-xl font-bold">KidsAsk.AI</h2>
-              <p className="text-white text-opacity-80">A safe space for curious minds</p>
-            </div>
-            
-            <div className="flex flex-wrap justify-center md:justify-end gap-6">
-              <div>
-                <h3 className="font-semibold mb-2">For Parents</h3>
-                <ul className="space-y-1">
-                  <li><a href="#" className="text-white text-opacity-80 hover:text-opacity-100">Safety Features</a></li>
-                  <li><a href="#" className="text-white text-opacity-80 hover:text-opacity-100">Privacy Policy</a></li>
-                  <li><a href="#" className="text-white text-opacity-80 hover:text-opacity-100">Contact Us</a></li>
-                </ul>
-              </div>
-              
-              <div>
-                <h3 className="font-semibold mb-2">Topics</h3>
-                <ul className="space-y-1">
-                  <li><a href="#" className="text-white text-opacity-80 hover:text-opacity-100">Animals</a></li>
-                  <li><a href="#" className="text-white text-opacity-80 hover:text-opacity-100">Space</a></li>
-                  <li><a href="#" className="text-white text-opacity-80 hover:text-opacity-100">All Topics</a></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          
-          <div className="mt-6 pt-4 border-t border-white border-opacity-20 text-center text-sm text-white text-opacity-80">
-            <p>&copy; 2025 KidsAsk.AI. All rights reserved.</p>
-          </div>
+      <footer className="bg-gray-100 py-4 text-center text-gray-600 mt-auto">
+        <p className="mb-2">© 2025 KidsAsk.AI</p>
+        <div className="flex justify-center space-x-6">
+          <a href="#" className="text-sm hover:text-gray-900">About Us</a>
+          <a href="#" className="text-sm hover:text-gray-900">Terms of Use</a>
+          <a href="#" className="text-sm hover:text-gray-900">Privacy Policy</a>
+          <a href="#" className="text-sm hover:text-gray-900">Refund Policy</a>
+          <a href="#" className="text-sm hover:text-gray-900">Contact Us</a>
         </div>
       </footer>
     </div>

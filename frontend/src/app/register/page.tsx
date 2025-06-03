@@ -162,16 +162,14 @@ export default function RegisterPage() {
         </div>
       </div>
       
-      <footer className="bg-gray-200 py-4 text-center text-gray-600">
-        <div className="container mx-auto px-4">
-          <p className="mb-2">© 2025 KidsAsk.AI</p>
-          <div className="flex justify-center space-x-6">
-            <Link href="/about" className="hover:text-gray-900">About Us</Link>
-            <Link href="/terms" className="hover:text-gray-900">Terms of Use</Link>
-            <Link href="/privacy" className="hover:text-gray-900">Privacy Policy</Link>
-            <Link href="/refund" className="hover:text-gray-900">Refund Policy</Link>
-            <Link href="/contact" className="hover:text-gray-900">Contact Us</Link>
-          </div>
+      <footer className="bg-gray-100 py-4 text-center text-gray-600 mt-auto">
+        <p className="mb-2">© 2025 KidsAsk.AI</p>
+        <div className="flex justify-center space-x-6">
+          <a href="#" className="text-sm hover:text-gray-900">About Us</a>
+          <a href="#" className="text-sm hover:text-gray-900">Terms of Use</a>
+          <a href="#" className="text-sm hover:text-gray-900">Privacy Policy</a>
+          <a href="#" className="text-sm hover:text-gray-900">Refund Policy</a>
+          <a href="#" className="text-sm hover:text-gray-900">Contact Us</a>
         </div>
       </footer>
     </div>
