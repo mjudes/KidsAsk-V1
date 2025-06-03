@@ -282,8 +282,8 @@ export default function TopicDetailPage({ params }: { params: { id: string } }) 
         </div>
       </div>
       
-      <div className="flex-grow container mx-auto px-4 py-4">
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden h-full">
+      <div className="flex-grow flex flex-col container mx-auto px-4 py-4 min-h-[75vh]">
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden h-full flex-grow">
           {/* Free trial notification if applicable */}
           {isFreeTrial && (
             <div className="bg-yellow-50 border-b border-yellow-200 py-2 px-4">
@@ -318,14 +318,14 @@ export default function TopicDetailPage({ params }: { params: { id: string } }) 
         </div>
       </div>
       
-      <footer className="bg-gray-100 py-4 text-center text-gray-600 mt-auto">
-        <p className="mb-2">© 2025 KidsAsk.AI</p>
+      <footer className="bg-gray-100 py-3 text-center text-gray-600 mt-3">
+        <p className="mb-1 text-sm">© 2025 KidsAsk.AI</p>
         <div className="flex justify-center space-x-6">
-          <a href="#" className="text-sm hover:text-gray-900">About Us</a>
-          <a href="#" className="text-sm hover:text-gray-900">Terms of Use</a>
-          <a href="#" className="text-sm hover:text-gray-900">Privacy Policy</a>
-          <a href="#" className="text-sm hover:text-gray-900">Refund Policy</a>
-          <a href="#" className="text-sm hover:text-gray-900">Contact Us</a>
+          <a href="#" className="text-xs hover:text-gray-900">About Us</a>
+          <a href="#" className="text-xs hover:text-gray-900">Terms of Use</a>
+          <a href="#" className="text-xs hover:text-gray-900">Privacy Policy</a>
+          <a href="#" className="text-xs hover:text-gray-900">Refund Policy</a>
+          <a href="#" className="text-xs hover:text-gray-900">Contact Us</a>
         </div>
       </footer>
     </div>

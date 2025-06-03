@@ -31,14 +31,14 @@ export default function ChatBox({ messages, onSendMessage, isLoading, disabled =
   return (
     <div className="flex flex-col h-full rounded-xl overflow-hidden">
       {/* Chat content area */}
-      <div className="flex-grow p-4 overflow-y-auto flex flex-col">
+      <div className="flex-grow p-5 overflow-y-auto flex flex-col space-y-5">
         {messages.map((message, index) => (
           <div 
             key={index} 
             className={message.role === 'user' ? 'user-message' : 'assistant-message'}
           >
             <div className="flex items-start">
-              <div>{message.content}</div>
+              <div className="text-base leading-relaxed">{message.content}</div>
             </div>
           </div>
         ))}
@@ -57,14 +57,14 @@ export default function ChatBox({ messages, onSendMessage, isLoading, disabled =
       </div>
       
       {/* Input area */}
-      <form onSubmit={handleSubmit} className="p-4 bg-gray-50 border-t border-gray-200">
+      <form onSubmit={handleSubmit} className="p-4 bg-gray-50 border-t border-gray-200 sticky bottom-0">
         <div className="relative">
           <input
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder={placeholder}
-            className="w-full py-3 px-4 pr-12 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm"
+            className="w-full py-3 px-4 pr-12 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md"
             disabled={isLoading || disabled}
           />
           <button 

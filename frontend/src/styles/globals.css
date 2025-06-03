@@ -28,11 +28,11 @@ body {
   }
   
   .user-message {
-    @apply bg-blue-500 text-white self-end message-bubble rounded-tr-none;
+    @apply bg-blue-500 text-white self-end message-bubble rounded-tr-none mb-5;
   }
   
   .assistant-message {
-    @apply bg-gray-100 text-gray-800 self-start message-bubble rounded-tl-none;
+    @apply bg-gray-100 text-gray-800 self-start message-bubble rounded-tl-none mb-5;
   }
   
   .input-field {
