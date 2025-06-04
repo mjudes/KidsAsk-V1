@@ -4,9 +4,16 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import PaymentDetails from '../../components/registration/PaymentDetails';
+import RegistrationSteps from '../../components/RegistrationSteps';
 import { useAuth } from '../../utils/AuthContext';
-import { API_BASE_URL } from '../../utils/constants';
 import { processPayment } from '../../utils/userApi';
+
+// Define enum for clarity in step numbering
+enum PaymentStep {
+  PERSONAL_INFO = 1,
+  PLAN_SELECTION = 2,
+  PAYMENT_DETAILS = 3
+}
 
 export default function PaymentPage() {
   const router = useRouter();
@@ -70,29 +77,37 @@ export default function PaymentPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold mb-2">Complete Your Payment</h1>
-        <p className="text-gray-600">Please enter your payment details to upgrade your plan.</p>
+    <div className="min-h-screen flex flex-col">
+      <div className="flex-grow flex items-center justify-center px-4 py-12">
+        <div className="bg-white bg-opacity-95 rounded-xl shadow-xl w-full max-w-2xl">
+          <div className="p-6 md:p-8">
+            <div className="flex items-center mb-6">
+              <div className="text-3xl text-blue-500 mr-2">🚀</div>
+              <h1 className="text-2xl font-bold text-blue-500">Complete Your Payment</h1>
+            </div>
+            
+            <RegistrationSteps currentStep={PaymentStep.PAYMENT_DETAILS} />
+            
+            {error && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6">
+                {error}
+              </div>
+            )}
+            
+            {success && (
+              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6">
+                {success}
+              </div>
+            )}
+            
+            <PaymentDetails 
+              initialData={formData}
+              onSubmit={handlePaymentSubmit}
+              onBack={() => router.push('/upgrade')}
+            />
+          </div>
+        </div>
       </div>
-      
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6">
-          {error}
-        </div>
-      )}
-      
-      {success && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6">
-          {success}
-        </div>
-      )}
-      
-      <PaymentDetails 
-        initialData={formData}
-        onSubmit={handlePaymentSubmit}
-        onBack={() => router.push('/upgrade')}
-      />
       
       {isProcessing && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
@@ -103,11 +118,16 @@ export default function PaymentPage() {
         </div>
       )}
       
-      <div className="mt-8 text-center">
-        <Link href="/upgrade" className="text-blue-500 hover:underline">
-          Go Back to Plan Selection
-        </Link>
-      </div>
+      <footer className="bg-gray-100 py-4 text-center text-gray-600 mt-auto">
+        <p className="mb-2">© 2025 KidsAsk.AI</p>
+        <div className="flex justify-center space-x-6">
+          <a href="#" className="text-sm hover:text-gray-900">About Us</a>
+          <a href="#" className="text-sm hover:text-gray-900">Terms of Use</a>
+          <a href="#" className="text-sm hover:text-gray-900">Privacy Policy</a>
+          <a href="#" className="text-sm hover:text-gray-900">Refund Policy</a>
+          <a href="#" className="text-sm hover:text-gray-900">Contact Us</a>
+        </div>
+      </footer>
     </div>
   );
 }
