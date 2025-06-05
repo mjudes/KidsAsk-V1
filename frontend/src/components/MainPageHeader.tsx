@@ -58,10 +58,10 @@ export default function MainPageHeader() {
     <header className="bg-white shadow-md">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <Link href="/" className="flex items-center space-x-2">
-          <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-white text-2xl font-bold shadow-md">
+          <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-white text-xl font-bold shadow-md">
             K
           </div>
-          <span className="text-2xl text-blue-600 font-bold font-display">KidsAsk.AI</span>
+          <span className="text-xl text-blue-600 font-bold">KidsAsk.AI</span>
         </Link>
         
         <nav className="flex items-center space-x-4">
