@@ -319,7 +319,7 @@ export default function TopicDetailPage({ params }: { params: { id: string } }) 
       </div>
       
       <footer className="bg-gray-100 py-3 text-center text-gray-600 mt-3">
-        <p className="mb-1 text-sm">© 2025 KidsAsk.AI</p>
+        <p className="mb-1 text-sm"><a href="http://localhost:3050/" className="hover:text-gray-900">© 2025 KidsAsk.AI</a></p>
         <div className="flex justify-center space-x-6">
           <a href="#" className="text-xs hover:text-gray-900">About Us</a>
           <a href="#" className="text-xs hover:text-gray-900">Terms of Use</a>

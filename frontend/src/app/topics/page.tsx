@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Header from '../../components/Header';
+import TopicsPageHeader from '../../components/TopicsPageHeader';
 import Footer from '../../components/Footer';
 import TopicSelector from '../../components/TopicSelector';
 import { Topic } from '../../types';
@@ -95,7 +95,7 @@ export default function TopicsPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Header />
+        <TopicsPageHeader />
         <div className="flex-grow flex flex-col items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
           <p className="text-white text-lg">Loading topics...</p>
@@ -109,7 +109,7 @@ export default function TopicsPage() {
   if (error) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Header />
+        <TopicsPageHeader />
         <div className="flex-grow container mx-auto px-4 py-8 flex flex-col items-center justify-center">
           <div className="text-red-500 text-xl mb-4">⚠️ {error}</div>
           <button 
@@ -140,43 +140,7 @@ export default function TopicsPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <div className="absolute top-4 right-4 flex space-x-2">
-        {!userName ? (
-          <button 
-            onClick={() => router.push('/login')}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full transition shadow-lg"
-          >
-            Log In
-          </button>
-        ) : (
-          <>
-            <button 
-              onClick={() => router.push('/dashboard')}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full transition shadow-lg flex items-center"
-            >
-              <span>Dashboard</span>
-              <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-              </svg>
-            </button>
-            <button 
-              onClick={handleLogout}
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full transition shadow-lg flex items-center"
-            >
-              <span>Logout</span>
-              <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-            </button>
-          </>
-        )}
-      </div>
-      
-      {userName && (
-        <div className="absolute top-4 left-4 p-4 bg-white bg-opacity-90 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 fade-in">
-          <p className="text-lg font-medium">👋 Hi, {userName}!</p>
-        </div>
-      )}
+      <TopicsPageHeader />
       
       <main className="flex-grow container mx-auto px-4 py-8 mt-6">
         <div className="text-center mb-8 fade-in">
@@ -211,16 +175,7 @@ export default function TopicsPage() {
         </div>
       </main>
       
-      <footer className="bg-gray-100 py-4 text-center text-gray-600 mt-auto">
-        <p className="mb-2">© 2025 KidsAsk.AI</p>
-        <div className="flex justify-center space-x-6">
-          <a href="#" className="text-sm hover:text-gray-900">About Us</a>
-          <a href="#" className="text-sm hover:text-gray-900">Terms of Use</a>
-          <a href="#" className="text-sm hover:text-gray-900">Privacy Policy</a>
-          <a href="#" className="text-sm hover:text-gray-900">Refund Policy</a>
-          <a href="#" className="text-sm hover:text-gray-900">Contact Us</a>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

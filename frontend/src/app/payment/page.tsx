@@ -119,7 +119,7 @@ export default function PaymentPage() {
       )}
       
       <footer className="bg-gray-100 py-4 text-center text-gray-600 mt-auto">
-        <p className="mb-2">© 2025 KidsAsk.AI</p>
+        <p className="mb-2"><a href="http://localhost:3050/" className="hover:text-gray-900">© 2025 KidsAsk.AI</a></p>
         <div className="flex justify-center space-x-6">
           <a href="#" className="text-sm hover:text-gray-900">About Us</a>
           <a href="#" className="text-sm hover:text-gray-900">Terms of Use</a>

@@ -7,6 +7,7 @@ import RegistrationSteps from '../../components/RegistrationSteps';
 import PersonalInfoForm from '../../components/registration/PersonalInfoForm';
 import PlanSelection from '../../components/registration/PlanSelection';
 import PaymentDetails from '../../components/registration/PaymentDetails';
+import Footer from '../../components/Footer';
 
 enum RegistrationStep {
   PERSONAL_INFO = 1,
@@ -162,16 +163,7 @@ export default function RegisterPage() {
         </div>
       </div>
       
-      <footer className="bg-gray-100 py-4 text-center text-gray-600 mt-auto">
-        <p className="mb-2">© 2025 KidsAsk.AI</p>
-        <div className="flex justify-center space-x-6">
-          <a href="#" className="text-sm hover:text-gray-900">About Us</a>
-          <a href="#" className="text-sm hover:text-gray-900">Terms of Use</a>
-          <a href="#" className="text-sm hover:text-gray-900">Privacy Policy</a>
-          <a href="#" className="text-sm hover:text-gray-900">Refund Policy</a>
-          <a href="#" className="text-sm hover:text-gray-900">Contact Us</a>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

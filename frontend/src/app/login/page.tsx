@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Footer from '../../components/Footer';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -80,8 +81,9 @@ export default function LoginPage() {
           // Store token in cookie
           document.cookie = `auth_token=${response.data.token}; path=/; max-age=604800; SameSite=Strict`;
           
-          // Redirect to topics page
-          router.push('/topics');
+          // Redirect to admin page if admin, otherwise to topics page
+          const redirectUrl = response.data.redirectUrl || '/topics';
+          router.push(redirectUrl);
         } else {
           setErrors(prev => ({ ...prev, general: response.message || 'Login failed' }));
         }
@@ -194,16 +196,7 @@ export default function LoginPage() {
         </div>
       </div>
       
-      <footer className="bg-gray-100 py-4 text-center text-gray-600 mt-auto">
-        <p className="mb-2">© 2025 KidsAsk.AI</p>
-        <div className="flex justify-center space-x-6">
-          <a href="#" className="text-sm hover:text-gray-900">About Us</a>
-          <a href="#" className="text-sm hover:text-gray-900">Terms of Use</a>
-          <a href="#" className="text-sm hover:text-gray-900">Privacy Policy</a>
-          <a href="#" className="text-sm hover:text-gray-900">Refund Policy</a>
-          <a href="#" className="text-sm hover:text-gray-900">Contact Us</a>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

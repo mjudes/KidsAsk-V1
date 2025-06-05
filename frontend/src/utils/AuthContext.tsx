@@ -22,6 +22,7 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isAdmin: boolean;
   login: (email: string, password: string) => Promise<any>;
   logout: () => void;
   refreshUser: () => Promise<any>;
@@ -32,6 +33,7 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   isAuthenticated: false,
   isLoading: true,
+  isAdmin: false,
   login: async () => ({}),
   logout: () => {},
   refreshUser: async () => ({}),
@@ -153,7 +155,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (data.data.token) {
           localStorage.setItem('auth_token', data.data.token);
         }
-        return { success: true, message: 'Login successful' };
+        // Return redirect URL based on user role
+        const redirectUrl = data.data.user.role === 'admin' ? '/admin' : '/dashboard';
+        return { success: true, message: 'Login successful', redirectUrl };
       } else {
         return { success: false, message: data.message || 'Login failed' };
       }
@@ -193,6 +197,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     isAuthenticated,
     isLoading,
+    isAdmin: user?.role === 'admin',
     login,
     logout,
     refreshUser,

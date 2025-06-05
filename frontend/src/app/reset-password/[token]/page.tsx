@@ -237,7 +237,7 @@ export default function NewPasswordPage() {
       <footer className="bg-white bg-opacity-10 py-4">
         <div className="container mx-auto px-4">
           <p className="text-center text-white text-opacity-80">
-            © 2025 KidsAsk.AI. All rights reserved.
+            <a href="http://localhost:3050/" className="hover:text-white">© 2025 KidsAsk.AI. All rights reserved.</a>
           </p>
         </div>
       </footer>

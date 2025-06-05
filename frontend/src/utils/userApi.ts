@@ -124,3 +124,104 @@ export const checkSubscriptionStatus = (user: any) => {
     message: ''
   };
 };
+
+/**
+ * Admin API: Get all users within a timeframe
+ * @param timeframe 'day', 'week', 'month', or undefined for all users
+ * @returns Response from the API with users list
+ */
+export const getAdminUsers = async (timeframe?: 'day' | 'week' | 'month') => {
+  try {
+    let url = `${API_BASE_URL}/api/admin/users`;
+    if (timeframe) {
+      url += `?timeframe=${timeframe}`;
+    }
+    
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: getAuthHeaders(),
+      credentials: 'include', // Include cookies for authentication
+    });
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching admin users:', error);
+    return {
+      success: false,
+      message: 'An error occurred while fetching users'
+    };
+  }
+};
+
+/**
+ * Admin API: Get users registered in the last 24 hours
+ * @returns Response from the API with recent users list and plan breakdown
+ */
+export const getRecentUsers = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/admin/recent-users`, {
+      method: 'GET',
+      headers: getAuthHeaders(),
+      credentials: 'include', // Include cookies for authentication
+    });
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching recent users:', error);
+    return {
+      success: false,
+      message: 'An error occurred while fetching recent users'
+    };
+  }
+};
+
+/**
+ * Admin API: Get user registration statistics
+ * @returns Response from the API with registration statistics
+ */
+export const getAdminStats = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/admin/stats`, {
+      method: 'GET',
+      headers: getAuthHeaders(),
+      credentials: 'include', // Include cookies for authentication
+    });
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching admin stats:', error);
+    return {
+      success: false,
+      message: 'An error occurred while fetching statistics'
+    };
+  }
+};
+
+/**
+ * Admin API: Update user account status (suspend/activate)
+ * @param userId The ID of the user to update
+ * @param accountLocked Whether to lock the account (true) or unlock it (false)
+ * @returns Response from the API
+ */
+export const updateUserStatus = async (userId: string, accountLocked: boolean) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}/status`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      credentials: 'include', // Include cookies for authentication
+      body: JSON.stringify({ accountLocked }),
+    });
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error updating user status:', error);
+    return {
+      success: false,
+      message: 'An error occurred while updating user status'
+    };
+  }
+};

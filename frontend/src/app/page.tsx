@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import TopicSelector from '../components/TopicSelector';
 import ChatBox from '../components/ChatBox';
-import Header from '../components/Header';
+import MainPageHeader from '../components/MainPageHeader';
 import Footer from '../components/Footer';
 import { Topic, ChatMessage } from '../types';
 
@@ -80,14 +80,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen flex flex-col">
-      <div className="absolute top-4 right-4">
-        <button 
-          onClick={() => router.push('/login')}
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full transition shadow-lg"
-        >
-          Log In
-        </button>
-      </div>
+      <MainPageHeader />
       
       {/* Auth required notification */}
       {authRequired && (
@@ -193,20 +186,11 @@ export default function Home() {
             </div>
           </div>
           
-          <footer className="bg-gray-100 py-4 text-center text-gray-600 mt-auto">
-            <p className="mb-2">© 2025 KidsAsk.AI</p>
-            <div className="flex justify-center space-x-6">
-              <a href="#" className="text-sm hover:text-gray-900">About Us</a>
-              <a href="#" className="text-sm hover:text-gray-900">Terms of Use</a>
-              <a href="#" className="text-sm hover:text-gray-900">Privacy Policy</a>
-              <a href="#" className="text-sm hover:text-gray-900">Refund Policy</a>
-              <a href="#" className="text-sm hover:text-gray-900">Contact Us</a>
-            </div>
-          </footer>
+          <Footer />
         </>
       ) : (
         <>
-          <Header />
+          <MainPageHeader />
           <div className="flex-grow container mx-auto px-4 py-8">
             <div className="flex flex-col h-full">
               <div className="flex justify-between items-center mb-4">

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-export default function Header() {
+export default function DashboardHeader() {
   const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState('');
@@ -56,32 +56,49 @@ export default function Header() {
 
   return (
     <header className="bg-white shadow-md">
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <Link href="/" className="flex items-center space-x-3">
-          <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-white text-xl font-bold shadow-md">
-            K
+      <div className="container mx-auto px-4 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <Link href="/dashboard" className="flex items-center space-x-2">
+              <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-white text-xl font-bold shadow-md">
+                K
+              </div>
+              <span className="text-xl font-bold text-blue-600">KidsAsk.AI</span>
+            </Link>
           </div>
-          <h1 className="text-2xl font-display font-bold text-blue-600">KidsAsk.AI</h1>
-        </Link>
-        
-        <nav className="flex items-center space-x-4">
-          <ul className="hidden md:flex space-x-6">
-            <li>
-              <Link href="/" className="text-gray-700 hover:text-blue-600 transition">Home</Link>
-            </li>
-            <li>
-              <Link href="/topics" className="text-gray-700 hover:text-blue-600 transition">Topics</Link>
-            </li>
-            <li>
-              <Link href="/guide" className="text-gray-700 hover:text-blue-600 transition">Parent Guide</Link>
-            </li>
-          </ul>
           
-          {isLoggedIn ? (
+          <div className="flex items-center space-x-4">
+            {/* Navigation buttons */}
+            <div className="hidden md:flex space-x-2">
+              <Link 
+                href="/dashboard" 
+                className="px-4 py-2 bg-blue-500 text-white font-medium rounded-md hover:bg-blue-600 transition"
+              >
+                Dashboard
+              </Link>
+              
+              {isAdmin && (
+                <Link 
+                  href="/admin" 
+                  className="px-4 py-2 bg-purple-600 text-white font-medium rounded-md hover:bg-purple-700 transition"
+                >
+                  Admin
+                </Link>
+              )}
+              
+              <Link 
+                href="/topics" 
+                className="px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-md hover:bg-gray-300 transition"
+              >
+                Topics
+              </Link>
+            </div>
+            
+            {/* User menu */}
             <div className="relative">
               <button 
                 onClick={() => setShowDropdown(!showDropdown)}
-                className="flex items-center space-x-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md transition"
+                className="flex items-center space-x-2 bg-white border border-gray-300 hover:bg-gray-100 px-4 py-2 rounded-md transition"
               >
                 <span>{userName || 'Account'}</span>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -123,23 +140,8 @@ export default function Header() {
                 </div>
               )}
             </div>
-          ) : (
-            <div className="flex space-x-2">
-              <Link 
-                href="/login" 
-                className="text-gray-700 hover:text-blue-600 transition px-4 py-2"
-              >
-                Log In
-              </Link>
-              <Link 
-                href="/register" 
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition shadow-md"
-              >
-                Register
-              </Link>
-            </div>
-          )}
-        </nav>
+          </div>
+        </div>
       </div>
     </header>
   );

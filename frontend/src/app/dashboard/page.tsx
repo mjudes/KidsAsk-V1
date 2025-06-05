@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Header from '../../components/Header';
+import DashboardHeader from '../../components/DashboardHeader';
 import Footer from '../../components/Footer';
 import SubscriptionAlert from '../../components/SubscriptionAlert';
 import { useAuth } from '../../utils/AuthContext';
@@ -37,7 +37,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
+      <DashboardHeader />
       
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="bg-white bg-opacity-90 rounded-xl shadow-lg p-6 mb-8">

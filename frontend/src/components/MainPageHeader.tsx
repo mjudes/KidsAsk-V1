@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-export default function Header() {
+export default function MainPageHeader() {
   const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState('');
@@ -57,25 +57,14 @@ export default function Header() {
   return (
     <header className="bg-white shadow-md">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <Link href="/" className="flex items-center space-x-3">
-          <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-white text-xl font-bold shadow-md">
+        <Link href="/" className="flex items-center space-x-2">
+          <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-white text-2xl font-bold shadow-md">
             K
           </div>
-          <h1 className="text-2xl font-display font-bold text-blue-600">KidsAsk.AI</h1>
+          <span className="text-2xl text-blue-600 font-bold font-display">KidsAsk.AI</span>
         </Link>
         
         <nav className="flex items-center space-x-4">
-          <ul className="hidden md:flex space-x-6">
-            <li>
-              <Link href="/" className="text-gray-700 hover:text-blue-600 transition">Home</Link>
-            </li>
-            <li>
-              <Link href="/topics" className="text-gray-700 hover:text-blue-600 transition">Topics</Link>
-            </li>
-            <li>
-              <Link href="/guide" className="text-gray-700 hover:text-blue-600 transition">Parent Guide</Link>
-            </li>
-          </ul>
           
           {isLoggedIn ? (
             <div className="relative">
@@ -124,18 +113,18 @@ export default function Header() {
               )}
             </div>
           ) : (
-            <div className="flex space-x-2">
+            <div className="flex space-x-4">
               <Link 
-                href="/login" 
-                className="text-gray-700 hover:text-blue-600 transition px-4 py-2"
+                href="/guide" 
+                className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full font-medium transition shadow-lg hover-float"
               >
-                Log In
+                Parent Guide
               </Link>
               <Link 
-                href="/register" 
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition shadow-md"
+                href="/login" 
+                className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full font-medium transition shadow-lg hover-float"
               >
-                Register
+                Log In
               </Link>
             </div>
           )}
