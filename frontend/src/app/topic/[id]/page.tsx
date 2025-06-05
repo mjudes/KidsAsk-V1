@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Header from '../../../components/Header';
+import TopicPageHeader from '../../../components/TopicPageHeader';
 import Footer from '../../../components/Footer';
 import ChatBox from '../../../components/ChatBox';
 import { ChatMessage, Topic } from '../../../types';
@@ -191,7 +191,7 @@ export default function TopicDetailPage({ params }: { params: { id: string } }) 
   if (!authChecked || isLoading) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Header />
+        <TopicPageHeader />
         <div className="flex-grow flex flex-col items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
           <p className="text-white text-lg">Loading topic...</p>
@@ -210,7 +210,7 @@ export default function TopicDetailPage({ params }: { params: { id: string } }) 
   if (error || !topic) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Header />
+        <TopicPageHeader />
         <div className="flex-grow container mx-auto px-4 py-8 flex flex-col items-center justify-center">
           <div className="text-red-500 text-xl mb-4">⚠️ {error || 'Topic not found'}</div>
           <button 
@@ -227,58 +227,12 @@ export default function TopicDetailPage({ params }: { params: { id: string } }) 
   
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Add absolute positioned logout button */}
-      <div className="absolute top-4 right-4 flex space-x-2">
-        {!userName ? (
-          <button 
-            onClick={() => router.push('/login')}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full transition shadow-lg"
-          >
-            Log In
-          </button>
-        ) : (
-          <>
-            <button 
-              onClick={() => router.push('/dashboard')}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full transition shadow-lg flex items-center"
-            >
-              <span>Dashboard</span>
-              <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-              </svg>
-            </button>
-            <button 
-              onClick={handleLogout}
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full transition shadow-lg flex items-center"
-            >
-              <span>Logout</span>
-              <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-            </button>
-          </>
-        )}
-      </div>
+      <TopicPageHeader />
       
-      {/* Simple header with back button and topic name */}
-      <div className="bg-white bg-opacity-10 shadow-sm">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center">
-            <button 
-              onClick={() => router.push('/topics')}
-              className="text-white p-2 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors"
-              aria-label="Back to topics"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M19 12H5M12 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <div className="flex items-center mx-auto">
-              <div className="text-3xl mr-2">{topic.icon}</div>
-              <h1 className="text-xl font-bold text-white">{topic.name}</h1>
-            </div>
-            <div className="w-10"></div> {/* Empty div to balance the layout */}
-          </div>
+      <div className="container mx-auto px-4 py-4">
+        <div className="flex items-center mb-4">
+          <div className="text-3xl mr-2">{topic.icon}</div>
+          <h1 className="text-2xl font-bold text-white">{topic.name}</h1>
         </div>
       </div>
       
