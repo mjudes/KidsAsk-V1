@@ -209,7 +209,12 @@ const authenticateUser = async (email, password, ipAddress = '') => {
       throw new Error('Invalid email or password');
     }
     
-    // Check if account is locked
+    // Check if account is permanently suspended by admin
+    if (user.accountLocked && (!user.lockUntil || user.lockUntil === null)) {
+      throw new Error('ACCOUNT_SUSPENDED');
+    }
+    
+    // Check if account is temporarily locked due to login attempts
     if (user.accountLocked && user.lockUntil && user.lockUntil > new Date()) {
       throw new Error('Account is temporarily locked. Please try again later or reset your password.');
     }

@@ -46,15 +46,23 @@ export const loginUser = async (email, password) => {
       body: JSON.stringify({ email, password }),
     });
     
+    const data = await response.json();
+    
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Login failed');
+      return {
+        success: false,
+        message: data.message || 'Login failed',
+        errorCode: data.errorCode
+      };
     }
     
-    return await response.json();
+    return data;
   } catch (error) {
     console.error('Error logging in:', error);
-    throw error;
+    return {
+      success: false,
+      message: 'An error occurred. Please try again.'
+    };
   }
 };
 

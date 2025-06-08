@@ -134,13 +134,23 @@ router.put('/users/:userId/status', authenticateRequired, isAdmin, async (req, r
       });
     }
     
-    // Find and update user
+    // Find and update user - when an admin suspends a user, set lockUntil to null (permanent suspension)
+    // When activating, clear both accountLocked and lockUntil
+    const updateData = accountLocked 
+      ? { 
+          accountLocked: true,
+          lockUntil: null, // null lockUntil indicates admin-initiated permanent suspension
+          updatedAt: new Date()
+        }
+      : {
+          accountLocked: false,
+          lockUntil: null,
+          updatedAt: new Date()
+        };
+    
     const user = await User.findByIdAndUpdate(
       userId,
-      { 
-        accountLocked,
-        updatedAt: new Date()
-      },
+      updateData,
       { new: true }
     ).select('-password');
     

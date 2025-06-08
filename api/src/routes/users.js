@@ -96,6 +96,14 @@ router.post('/login', validateLogin, async (req, res) => {
   } catch (error) {
     logger.error(`Login error: ${error.message}`);
     
+    if (error.message === 'ACCOUNT_SUSPENDED') {
+      return res.status(403).json({
+        success: false,
+        message: 'Your account has been suspended due to violation of KidsAsk rules and regulations. Please contact support for assistance.',
+        errorCode: 'ACCOUNT_SUSPENDED'
+      });
+    }
+    
     res.status(401).json({
       success: false,
       message: 'Invalid email or password'

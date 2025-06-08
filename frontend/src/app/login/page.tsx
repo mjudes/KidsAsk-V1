@@ -14,7 +14,8 @@ export default function LoginPage() {
   const [errors, setErrors] = useState({
     email: '',
     password: '',
-    general: ''
+    general: '',
+    isSuspended: false
   });
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
@@ -43,7 +44,8 @@ export default function LoginPage() {
     const newErrors = {
       email: '',
       password: '',
-      general: ''
+      general: '',
+      isSuspended: false
     };
     let isValid = true;
 
@@ -85,7 +87,16 @@ export default function LoginPage() {
           const redirectUrl = response.data.redirectUrl || '/topics';
           router.push(redirectUrl);
         } else {
-          setErrors(prev => ({ ...prev, general: response.message || 'Login failed' }));
+          // Check if account is suspended
+          if (response.errorCode === 'ACCOUNT_SUSPENDED') {
+            setErrors(prev => ({ 
+              ...prev, 
+              general: response.message || 'Your account has been suspended. Please contact support.',
+              isSuspended: true 
+            }));
+          } else {
+            setErrors(prev => ({ ...prev, general: response.message || 'Login failed' }));
+          }
         }
       } catch (error) {
         console.error('Login error:', error);
@@ -114,7 +125,17 @@ export default function LoginPage() {
           
           {errors.general && (
             <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-              {errors.general}
+              <p>{errors.general}</p>
+              {errors.isSuspended && (
+                <div className="mt-2">
+                  <Link 
+                    href="/contact" 
+                    className="inline-block bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded text-sm mt-2"
+                  >
+                    Contact Support
+                  </Link>
+                </div>
+              )}
             </div>
           )}
           

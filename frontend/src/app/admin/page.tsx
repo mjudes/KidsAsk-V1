@@ -17,6 +17,13 @@ export default function AdminPage() {
   const [recentUsers, setRecentUsers] = useState([]);
   const [stats, setStats] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    userId: '',
+    userName: '',
+    userEmail: '',
+    action: '' as 'suspend' | 'activate'
+  });
   
   // Extra protection - redirect if not admin
   useEffect(() => {
@@ -87,9 +94,26 @@ export default function AdminPage() {
     fetchUsers(newTimeframe);
   };
 
-  // Handle user suspension/activation
+  // Open confirmation modal before suspending/activating
+  const showConfirmation = (user: any, suspend: boolean) => {
+    setConfirmModal({
+      isOpen: true,
+      userId: user._id,
+      userName: user.fullName,
+      userEmail: user.email,
+      action: suspend ? 'suspend' : 'activate'
+    });
+  };
+  
+  // Close confirmation modal
+  const closeConfirmModal = () => {
+    setConfirmModal(prev => ({ ...prev, isOpen: false }));
+  };
+  
+  // Handle user suspension/activation after confirmation
   const handleUserStatusChange = async (userId: string, suspend: boolean) => {
     try {
+      closeConfirmModal();
       setIsProcessing(true);
       const response = await updateUserStatus(userId, suspend);
       
@@ -225,6 +249,9 @@ export default function AdminPage() {
                         Registration Date
                       </th>
                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Status
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
@@ -246,9 +273,18 @@ export default function AdminPage() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {new Date(user.createdAt).toLocaleString()}
                         </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                            user.accountLocked 
+                              ? 'bg-red-100 text-red-800' 
+                              : 'bg-green-100 text-green-800'
+                          }`}>
+                            {user.accountLocked ? 'Suspended' : 'Active'}
+                          </span>
+                        </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <button
-                            onClick={() => handleUserStatusChange(user._id, !user.accountLocked)}
+                            onClick={() => showConfirmation(user, !user.accountLocked)}
                             className={`px-3 py-1 rounded ${
                               user.accountLocked 
                                 ? 'bg-green-600 hover:bg-green-700 text-white' 
@@ -373,7 +409,7 @@ export default function AdminPage() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <button
-                            onClick={() => handleUserStatusChange(user._id, !user.accountLocked)}
+                            onClick={() => showConfirmation(user, !user.accountLocked)}
                             className={`px-3 py-1 rounded ${
                               user.accountLocked 
                                 ? 'bg-green-600 hover:bg-green-700 text-white' 
@@ -394,6 +430,45 @@ export default function AdminPage() {
         </div>
       </div>
       
+      {/* Confirmation Modal */}
+      {confirmModal.isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              {confirmModal.action === 'suspend' 
+                ? 'Suspend User Account' 
+                : 'Activate User Account'}
+            </h3>
+            <p className="mb-6 text-gray-600">
+              {confirmModal.action === 'suspend' 
+                ? `Are you sure you want to suspend ${confirmModal.userName}'s account (${confirmModal.userEmail})? This user will not be able to log in until their account is reactivated.` 
+                : `Are you sure you want to activate ${confirmModal.userName}'s account (${confirmModal.userEmail})?`}
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={closeConfirmModal}
+                className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleUserStatusChange(
+                  confirmModal.userId, 
+                  confirmModal.action === 'suspend'
+                )}
+                className={`px-4 py-2 rounded-md text-sm font-medium text-white ${
+                  confirmModal.action === 'suspend'
+                    ? 'bg-red-600 hover:bg-red-700' 
+                    : 'bg-green-600 hover:bg-green-700'
+                }`}
+              >
+                {confirmModal.action === 'suspend' ? 'Suspend Account' : 'Activate Account'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Processing overlay */}
       {isProcessing && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
@@ -409,6 +484,55 @@ export default function AdminPage() {
   return (
     <AdminProtected>
       {renderDashboard()}
+      
+      {/* Confirmation Modal */}
+      {confirmModal.isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              {confirmModal.action === 'suspend' 
+                ? 'Suspend User Account' 
+                : 'Activate User Account'}
+            </h3>
+            <p className="mb-6 text-gray-600">
+              {confirmModal.action === 'suspend' 
+                ? `Are you sure you want to suspend ${confirmModal.userName}'s account (${confirmModal.userEmail})? This user will not be able to log in until their account is reactivated.` 
+                : `Are you sure you want to activate ${confirmModal.userName}'s account (${confirmModal.userEmail})?`}
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={closeConfirmModal}
+                className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleUserStatusChange(
+                  confirmModal.userId, 
+                  confirmModal.action === 'suspend'
+                )}
+                className={`px-4 py-2 rounded-md text-sm font-medium text-white ${
+                  confirmModal.action === 'suspend'
+                    ? 'bg-red-600 hover:bg-red-700' 
+                    : 'bg-green-600 hover:bg-green-700'
+                }`}
+              >
+                {confirmModal.action === 'suspend' ? 'Suspend Account' : 'Activate Account'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Processing overlay */}
+      {isProcessing && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <p>Processing...</p>
+          </div>
+        </div>
+      )}
     </AdminProtected>
   );
 }
