@@ -62,7 +62,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Function to fetch current user data
   const fetchCurrentUser = async () => {
     try {
-      const token = localStorage.getItem('auth_token');
+      // Try to get token from localStorage first
+      let token = localStorage.getItem('auth_token');
+      
+      // If not found in localStorage, try to extract from cookie
+      if (!token) {
+        const cookieMatch = document.cookie.match(/auth_token=([^;]+)/);
+        token = cookieMatch ? cookieMatch[1] : null;
+        
+        // If found in cookie but not localStorage, synchronize them
+        if (token) {
+          localStorage.setItem('auth_token', token);
+        }
+      }
+      
       const headers: HeadersInit = {
         'Content-Type': 'application/json',
       };
@@ -70,6 +83,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Add token to headers if available
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
+        // Log token presence for debugging
+        console.log('Token found, sending authentication request');
+      } else {
+        console.log('No auth token found in storage or cookies');
+        setUser(null);
+        setIsAuthenticated(false);
+        setIsLoading(false);
+        return;
       }
       
       const response = await fetch(`${API_BASE_URL}/api/users/me`, {
@@ -82,13 +103,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (response.ok) {
         const data = await response.json();
         if (data.success && data.data && data.data.user) {
+          // Log successful user data retrieval with role
+          console.log(`User data retrieved with role: ${data.data.user.role}`);
           setUser(data.data.user);
           setIsAuthenticated(true);
+          
+          // Ensure token is in both localStorage and cookie
+          document.cookie = `auth_token=${token}; path=/; max-age=604800; SameSite=Lax`;
         } else {
+          console.log('User data not found in response');
           setUser(null);
           setIsAuthenticated(false);
         }
       } else {
+        console.log(`Failed to fetch user data: ${response.status}`);
         setUser(null);
         setIsAuthenticated(false);
       }
@@ -154,6 +182,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Store token in localStorage for persistent authentication
         if (data.data.token) {
           localStorage.setItem('auth_token', data.data.token);
+          
+          // Also manually set cookie for Safari compatibility
+          document.cookie = `auth_token=${data.data.token}; path=/; max-age=604800; SameSite=Lax`;
+          
+          // Log successful authentication with role
+          console.log(`User authenticated with role: ${data.data.user.role}`);
         }
         // Return redirect URL based on user role
         const redirectUrl = data.data.user.role === 'admin' ? '/admin' : '/dashboard';

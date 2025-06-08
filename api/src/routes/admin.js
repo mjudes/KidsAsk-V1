@@ -9,9 +9,15 @@ const { authenticateRequired } = require('../middleware/auth');
  */
 const isAdmin = async (req, res, next) => {
   try {
-    if (req.user && req.user.role === 'admin') {
+    // Log debugging information
+    logger.info(`Admin check - userRole: ${req.userRole}, userId: ${req.userId}`);
+    
+    if (req.userRole === 'admin') {
+      logger.info('Admin access granted');
       return next();
     }
+    
+    logger.warn(`Admin access denied for user with role: ${req.userRole}`);
     return res.status(403).json({
       success: false,
       message: 'Access denied. Admin privileges required.'

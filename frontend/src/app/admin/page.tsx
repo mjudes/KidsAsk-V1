@@ -9,7 +9,7 @@ import DashboardHeader from '../../components/DashboardHeader';
 
 export default function AdminPage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, isAdmin, isAuthenticated } = useAuth();
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [timeframe, setTimeframe] = useState<'day' | 'week' | 'month'>('day');
@@ -17,6 +17,14 @@ export default function AdminPage() {
   const [recentUsers, setRecentUsers] = useState([]);
   const [stats, setStats] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  
+  // Extra protection - redirect if not admin
+  useEffect(() => {
+    if (isAuthenticated && !isAdmin) {
+      console.log('Redirecting from admin page - user is not an admin');
+      router.push('/dashboard');
+    }
+  }, [isAuthenticated, isAdmin, router]);
   
   // Fetch data when the component mounts and admin user is available
   useEffect(() => {
