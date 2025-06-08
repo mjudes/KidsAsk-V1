@@ -11,7 +11,7 @@ export default function Footer() {
         <a href="#" className="mx-3 text-sm hover:text-gray-900">Terms of Use</a>
         <a href="#" className="mx-3 text-sm hover:text-gray-900">Privacy Policy</a>
         <a href="#" className="mx-3 text-sm hover:text-gray-900">Refund Policy</a>
-        <a href="#" className="mx-3 text-sm hover:text-gray-900">Contact Us</a>
+        <a href="/contact" className="mx-3 text-sm hover:text-gray-900">Contact Us</a>
       </div>
     </footer>
   );
