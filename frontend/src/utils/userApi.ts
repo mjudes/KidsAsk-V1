@@ -112,7 +112,7 @@ export const checkSubscriptionStatus = (user: any) => {
       isLow: questionsRemaining > 0,
       needsUpgrade: true,
       message: questionsRemaining <= 0 
-        ? `You've used all your questions for your ${plan} plan. Please upgrade to continue.`
+        ? `You've used all your questions for your ${isFreeTrialUser ? 'Free Plan' : plan} plan. Please upgrade to continue.`
         : `You have only ${questionsRemaining} questions remaining. Consider upgrading soon.`
     };
   }

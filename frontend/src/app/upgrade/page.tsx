@@ -96,7 +96,7 @@ export default function UpgradePage() {
   }
 
   // Get current user plan info
-  const currentPlan = user?.subscription?.plan || 'freeTrial';
+  const currentPlan = user?.subscription?.isFreeTrialUser ? 'freeTrial' : user?.subscription?.plan || 'freeTrial';
   const questionsRemaining = user?.subscription?.questionsRemaining || 0;
 
   return (

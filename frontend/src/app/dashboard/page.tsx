@@ -52,7 +52,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium text-blue-800">
-                  Current Plan: <span className="font-bold capitalize">{user?.subscription?.plan || 'Free Trial'}</span>
+                  Current Plan: <span className="font-bold capitalize">{user?.subscription?.isFreeTrialUser ? 'Free Trial' : user?.subscription?.plan || 'Free Trial'}</span>
                 </p>
                 <p className="text-sm text-blue-700">
                   Status: <span className="capitalize">{user?.subscription?.status || 'Active'}</span>
