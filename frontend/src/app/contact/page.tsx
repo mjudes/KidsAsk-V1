@@ -307,7 +307,7 @@ export default function ContactPage() {
                   {errors.message && <p className="mt-1 text-sm text-red-500">{errors.message}</p>}
                 </div>
                 
-                <div className="mb-4">
+                <div className="mb-4 flex flex-col items-center">
                   <div 
                     id="recaptcha" 
                     className="g-recaptcha" 
